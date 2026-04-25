@@ -212,7 +212,7 @@ fn parse_cli_args(args : Array[String]) -> CliArgs {
       result.json_schema = true
     } else if arg == "--check-deps" {
       result.check_deps = true
-    } else if not(arg.has_prefix("-")) {
+    } else if !(arg.has_prefix("-")) {
       result.input_file = Some(arg)
     }
     i = i + 1
@@ -328,7 +328,7 @@ fn check_dependencies(backend : String) -> Unit {
   let required = get_required_deps(backend)
   let missing : Array[String] = []
   for dep in required {
-    if not(deps.contains(dep)) {
+    if !(deps.contains(dep)) {
       missing.push(dep)
     }
   }
@@ -412,7 +412,7 @@ fn parse_queries(content : String) -> Array[QueryDef] {
             }
           } else if next_line.has_prefix("-- @query ") {
             break
-          } else if next_line.length() > 0 && not(next_line.has_prefix("--")) {
+          } else if next_line.length() > 0 && !(next_line.has_prefix("--")) {
             sql_lines.push(next_line)
             if next_line.has_suffix(";") {
               i = i + 1
@@ -587,7 +587,7 @@ fn is_string_sql_type(sql_type : String) -> Bool {
 ///|
 fn has_validatable_fields(s : @ir.Struct) -> Bool {
   for field in s.fields {
-    if not(field.constraints.is_empty()) {
+    if !(field.constraints.is_empty()) {
       return true
     }
   }

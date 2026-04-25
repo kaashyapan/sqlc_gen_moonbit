@@ -113,7 +113,7 @@ pub fn column_to_ir_type_with_override(
       let base_type = @ir.Type::named(override_.moonbit_type)
       let is_nullable = match override_.nullable {
         Some(n) => n
-        None => not(col.not_null)
+        None => !(col.not_null)
       }
       if is_nullable {
         @ir.Type::optional(base_type)

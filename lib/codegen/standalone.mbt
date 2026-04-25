@@ -50,7 +50,7 @@ pub fn parse_sql_queries(content : String) -> Array[QueryDef] {
             }
           } else if next_line.has_prefix("-- @query ") {
             break
-          } else if next_line.length() > 0 && not(next_line.has_prefix("--")) {
+          } else if next_line.length() > 0 && !(next_line.has_prefix("--")) {
             sql_lines.push(next_line)
             if next_line.has_suffix(";") {
               i = i + 1
@@ -175,7 +175,7 @@ fn standalone_is_string_sql_type(sql_type : String) -> Bool {
 ///|
 fn standalone_has_validatable_fields(s : @ir.Struct) -> Bool {
   for field in s.fields {
-    if not(field.constraints.is_empty()) {
+    if !(field.constraints.is_empty()) {
       return true
     }
   }

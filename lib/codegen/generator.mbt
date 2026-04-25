@@ -127,7 +127,7 @@ pub fn sql_type_to_moonbit(
       // Determine nullability: explicit override > column definition
       let is_nullable = match override_.nullable {
         Some(n) => n
-        None => not(col.not_null)
+        None => !(col.not_null)
       }
       if is_nullable {
         base_type + "?"

@@ -136,7 +136,7 @@ fn generate_types(
   for query in request.queries {
     if query.cmd == ":one" || query.cmd == ":many" {
       let struct_name = to_pascal_case(query.name) + "Row"
-      if not(generated_structs.contains(struct_name)) &&
+      if !(generated_structs.contains(struct_name)) &&
         query.columns.length() > 0 {
         generated_structs[struct_name] = true
         generate_result_struct(

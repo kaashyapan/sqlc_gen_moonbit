@@ -14,7 +14,7 @@ pub fn generate_json_schema(request : @plugin.GenerateRequest) -> String {
   // Generate schema for each Params struct
   for query in request.queries {
     if query.params.length() > 0 {
-      if not(first_def) {
+      if !(first_def) {
         buf.write_string(",\n")
       }
       first_def = false
@@ -27,7 +27,7 @@ pub fn generate_json_schema(request : @plugin.GenerateRequest) -> String {
   for query in request.queries {
     if query.cmd == ":one" || query.cmd == ":many" {
       if query.columns.length() > 0 {
-        if not(first_def) {
+        if !(first_def) {
           buf.write_string(",\n")
         }
         first_def = false
@@ -128,7 +128,7 @@ fn emit_field_property(buf : StringBuilder, field : @ir.Field) -> Unit {
   }
   match c.min_value {
     Some(val) =>
-      if not(c.unsigned) {
+      if !(c.unsigned) {
         buf.write_string(", \"minimum\": ")
         buf.write_string(val.to_string())
       }
