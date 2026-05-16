@@ -51,13 +51,8 @@ fn generate_query_function_postgres_js(
     _ => "Unit"
   }
 
-  // Doc comment
-  buf.write_string("///| ")
-  buf.write_string(query.name)
-  buf.write_string("\n")
-  buf.write_string("/// ")
-  buf.write_string(sanitize_newlines(query.text))
-  buf.write_string("\n")
+  // Doc comment — preserves the original line breaks from query.sql.
+  backend_write_doc_comment(buf, query)
 
   // Function signature - async with Pool type from mizchi/npm_typed/pg
   buf.write_string("pub async fn ")
@@ -156,7 +151,7 @@ fn generate_query_function_postgres_js(
 ///|
 fn postgres_js_param_to_any(col : @plugin.Column, expr : String) -> String {
   let type_name = col.type_.name.to_upper()
-  let is_nullable = !(col.not_null)
+  let is_nullable = !col.not_null
   let is_int64 = type_name == "INTEGER" ||
     type_name == "INT" ||
     type_name == "INT4" ||
@@ -190,7 +185,7 @@ fn postgres_js_column_from_any(
   let field_access = obj_expr + "[" + field_name + "]"
 
   // Handle nullable columns
-  if !(col.not_null) {
+  if !col.not_null {
     // For nullable columns, check for null/undefined first
     match type_name {
       "INTEGER" | "INT" | "INT4" =>

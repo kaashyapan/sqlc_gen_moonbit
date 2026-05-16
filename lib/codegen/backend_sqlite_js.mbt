@@ -42,13 +42,8 @@ fn generate_query_function_sqlite_js(
     _ => "Unit"
   }
 
-  // Doc comment
-  buf.write_string("///| ")
-  buf.write_string(query.name)
-  buf.write_string("\n")
-  buf.write_string("/// ")
-  buf.write_string(sanitize_newlines(query.text))
-  buf.write_string("\n")
+  // Doc comment — preserves the original line breaks from query.sql.
+  backend_write_doc_comment(buf, query)
 
   // Function signature - use high-level Database type with raise SqlError
   buf.write_string("pub fn ")
@@ -155,7 +150,7 @@ fn generate_query_function_sqlite_js(
 ///|
 fn sqlite_js_param_to_sql_value(col : @plugin.Column, expr : String) -> String {
   let type_name = col.type_.name.to_upper()
-  let is_nullable = !(col.not_null)
+  let is_nullable = !col.not_null
   if is_nullable {
     // For nullable types, handle Option
     match type_name {
@@ -215,7 +210,7 @@ fn sqlite_js_param_to_sql_value(col : @plugin.Column, expr : String) -> String {
 fn sqlite_js_column_from_sql_value(col : @plugin.Column, idx : Int) -> String {
   let type_name = col.type_.name.to_upper()
   let idx_str = idx.to_string()
-  let is_nullable = !(col.not_null)
+  let is_nullable = !col.not_null
 
   // Use high-level Statement::column which returns SqlValue
   let base_expr = match type_name {

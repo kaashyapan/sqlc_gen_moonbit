@@ -56,13 +56,8 @@ fn generate_query_function_sqlite(
     _ => "Unit"
   }
 
-  // Doc comment
-  buf.write_string("///| ")
-  buf.write_string(query.name)
-  buf.write_string("\n")
-  buf.write_string("/// ")
-  buf.write_string(sanitize_newlines(query.text))
-  buf.write_string("\n")
+  // Doc comment — preserves the original line breaks from query.sql.
+  backend_write_doc_comment(buf, query)
 
   // Function signature - use low-level Sqlite3 type with raise SqlError
   buf.write_string("pub fn ")
@@ -186,7 +181,7 @@ fn sqlite_param_to_bind_call(
 ) -> String {
   let type_name = col.type_.name.to_upper()
   let idx_str = idx.to_string()
-  let is_nullable = !(col.not_null)
+  let is_nullable = !col.not_null
 
   // Get the base bind call expression
   let base_bind = fn(val_expr : String) -> String {
@@ -238,7 +233,7 @@ fn sqlite_param_to_bind_call(
 fn sqlite_column_to_moonbit(col : @plugin.Column, idx : Int) -> String {
   let type_name = col.type_.name.to_upper()
   let idx_str = idx.to_string()
-  let is_nullable = !(col.not_null)
+  let is_nullable = !col.not_null
 
   // Get the base value expression
   let base_expr = match type_name {

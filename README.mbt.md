@@ -289,6 +289,25 @@ For each query, sqlc-gen-moonbit generates:
 | `:execrows`| `Int`       | Returns number of affected rows |
 | `:execlastid` | `Int64`  | Returns last inserted ID (for `INSERT ... RETURNING id`) |
 
+### `Int64` parameters bind as `BigInt` on JS targets
+
+On the JS-target backends (`d1`, `sqlite_js`, `postgres_js`,
+`mysql_js`), `Int64` parameters — `limit`, `offset`, any `BIGINT`
+column, etc. — reach the underlying `D1PreparedStatement.bind(...)`
+or driver as a JavaScript `BigInt`. Real D1 and the JS drivers
+accept it, but tests that introspect bound params need to compare
+against `BigInt` literals rather than plain `Number`:
+
+```js
+// recording mock comparing the bound params
+assert.deepEqual(call.params, ["mizchi", 100, 0]);     // ❌ fails
+assert.deepEqual(call.params, ["mizchi", 100n, 0n]);   // ✅ passes
+```
+
+This catches callers migrating from hand-rolled `db.prepare(...)`
+code that used to bind plain `Number`. Tracking as [#6](https://github.com/mizchi/sqlc_gen_moonbit/issues/6)
+in case a future opt-in option narrows safe values back to `Number`.
+
 ## Standalone Code Generation
 
 You can generate MoonBit code from SQL without sqlc using the CLI tool or the library API.
@@ -406,6 +425,66 @@ moon run tasks > db/gen/sqlc_queries.mbt
 - [`examples/postgres_native`](./examples/postgres_native) - PostgreSQL with native binding
 - [`examples/postgres_js`](./examples/postgres_js) - PostgreSQL with JS target (Node.js)
 - [`examples/mysql_js`](./examples/mysql_js) - MySQL with JS target (Node.js)
+
+## Coexisting with `extern "js"`
+
+Workers codebases often have `extern "js"` blocks with inline
+`db.prepare(...)` statements. Migrating one such statement at a
+time to the generated bindings is straightforward once you know the
+shape: the generated MoonBit function can't be called *from* an
+`extern "js"` block directly, but it can be called from MoonBit and
+the result handed back into a JS-only renderer via a JSON bridge.
+
+The pattern:
+
+1. The MoonBit `async fn` calls the sqlc-generated query and
+   serialises the rows into a JSON array string.
+2. An `extern "js"` function (no SQL, no DB access) takes that JSON
+   plus any rendering context and returns the final string / HTML /
+   markdown.
+
+```moonbit
+// 1. Sqlc-generated query lives in the `@db` package.
+async fn list_pages_markdown(
+  binding : String,
+  handle : String,
+  limit : Int,
+  offset : Int,
+) -> String raise Error {
+  let db = d1_binding(binding)
+  let params = @db.ListPagesParams::new(
+    handle,
+    limit.to_int64(),
+    offset.to_int64(),
+  )
+  let rows = @db.list_pages(db, params)
+  let rows_json = serialise_rows(rows) // builds Json::array(...).stringify()
+  // 2. JS renderer takes the JSON, no DB access here.
+  render_pages_markdown(rows_json, handle)
+}
+
+extern "js" fn render_pages_markdown(rows_json : String, handle : String) -> String =
+  #| (rowsJson, handle) => {
+  #|   const rows = JSON.parse(rowsJson);
+  #|   // ...pure string building (escape, sort, format)...
+  #|   return out;
+  #| }
+```
+
+Notes when migrating an existing inline `db.prepare(...)` block:
+
+- Drop `.wait()` in callers that previously expected a
+  `@js_async.Promise[String]` — a MoonBit `async fn` returns `String`
+  directly.
+- `Int64` parameters (limit/offset etc.) bind as `BigInt` at the JS
+  boundary, so recording test mocks that compare `call.params` need
+  `BigInt` literals (`100n`, `0n`) instead of `Number`. See
+  [issue #6](https://github.com/mizchi/sqlc_gen_moonbit/issues/6).
+- Keep escaping / URL building / DOM-shaped output in the JS half;
+  only the SQL round-trip moves to MoonBit.
+- Wrap row fields in a small `safe_str` / `fallback_str` helper
+  while sqlc casts cell values without a runtime null check (see
+  [issue #5](https://github.com/mizchi/sqlc_gen_moonbit/issues/5)).
 
 ## Development
 
