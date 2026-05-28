@@ -5,7 +5,7 @@ async fn run_tests_inner() -> Unit {
   // Create connection pool
   let pool = @pg.Pool::new(
     host="localhost",
-    port=5433,
+    port=5432,
     user="postgres",
     password="postgres",
     database="testdb",
@@ -81,7 +81,10 @@ async fn run_tests() -> Unit noraise {
   try {
     run_tests_inner()
   } catch {
-    e => println("Error: \{e}")
+    _ => {
+      println("Error")
+      panic()
+    }
   }
 }
 

@@ -73,7 +73,10 @@ async fn run_tests() -> Unit noraise {
   try {
     run_tests_inner()
   } catch {
-    e => println("Error: \{e}")
+    _ => {
+      println("Error")
+      panic()
+    }
   }
 }
 
