@@ -93,6 +93,21 @@ test "d1 generated module emits local integer read helpers" {
 }
 
 ///|
+test "js database backends emit BigInt-compatible Int64 helpers" {
+  let request = @plugin.GenerateRequest::default()
+  let pg_out = generate_queries_postgres_js(request, [])
+  assert_true(pg_out.contains("BigInt(Math.trunc(Number(v)))"))
+  assert_true(pg_out.contains("#| (v) => Number(v)"))
+  assert_false(pg_out.contains("v.hi"))
+  assert_false(pg_out.contains("v.lo"))
+  let mysql_out = generate_queries_mysql_js(request, [])
+  assert_true(mysql_out.contains("BigInt(Math.trunc(Number(v)))"))
+  assert_true(mysql_out.contains("#| (v) => Number(v)"))
+  assert_false(mysql_out.contains("v.hi"))
+  assert_false(mysql_out.contains("v.lo"))
+}
+
+///|
 test "emit_sql_doc_lines preserves newlines from query.sql" {
   let buf = StringBuilder::new()
   let sql =

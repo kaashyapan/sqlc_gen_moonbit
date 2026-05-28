@@ -15,13 +15,13 @@ pub fn generate_queries_postgres_js(
     "extern \"js\" fn js_number_to_int64(v : @core.Any) -> Int64 =\n",
   )
   buf.write_string(
-    "  #| (v) => { const n = Number(v); return { hi: Math.floor(n / 0x100000000), lo: n >>> 0 }; }\n\n",
+    "  #| (v) => BigInt(Math.trunc(Number(v)))\n\n",
   )
   buf.write_string("///| Convert Int64 to JavaScript number\n")
   buf.write_string(
     "extern \"js\" fn int64_to_js_number(v : Int64) -> @core.Any =\n",
   )
-  buf.write_string("  #| (v) => v.hi * 0x100000000 + (v.lo >>> 0)\n\n")
+  buf.write_string("  #| (v) => Number(v)\n\n")
 
   // Generate query functions using pg Pool type
   buf.write_string("// Query functions\n")

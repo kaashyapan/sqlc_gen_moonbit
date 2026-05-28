@@ -1,4 +1,8 @@
 ///|
+extern "js" fn log_error(value : @core.Any) -> Unit =
+  #| (value) => console.error(value)
+
+///|
 async fn run_tests_inner() -> Unit {
   println("=== PostgreSQL JS Backend Test ===")
 
@@ -81,7 +85,8 @@ async fn run_tests() -> Unit noraise {
   try {
     run_tests_inner()
   } catch {
-    _ => {
+    e => {
+      log_error(@core.any(e))
       println("Error")
       panic()
     }

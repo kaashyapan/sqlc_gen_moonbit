@@ -3,11 +3,11 @@
 
 ///| Convert JavaScript number to Int64
 extern "js" fn js_number_to_int64(v : @core.Any) -> Int64 =
-  #| (v) => { const n = Number(v); return { hi: Math.floor(n / 0x100000000), lo: n >>> 0 }; }
+  #| (v) => BigInt(Math.trunc(Number(v)))
 
 ///| Convert Int64 to JavaScript number
 extern "js" fn int64_to_js_number(v : Int64) -> @core.Any =
-  #| (v) => v.hi * 0x100000000 + (v.lo >>> 0)
+  #| (v) => Number(v)
 
 // Query functions
 ///| GetUser
@@ -75,4 +75,3 @@ pub async fn delete_user(pool : @pg.Pool, params : DeleteUserParams) -> Unit {
   let result = pool.query(delete_user_sql, params=[int64_to_js_number(params.id)])
   ignore(result)
 }
-
