@@ -175,6 +175,29 @@ async test "D1: tags CRUD" {
 }
 
 ///|
+async test "D1: sqlc.arg in ON CONFLICT update" {
+  let mf = @cloudflare.Miniflare::new({
+    ..@cloudflare.MiniflareOptions::default(),
+    d1Databases: Some(["TEST_DB"]),
+  })
+  mf.ready()
+  let db = mf.get_d1_database("TEST_DB")
+  let _ = db.exec(get_schema_sql())
+  @gen.upsert_tag_with_sqlc_arg(
+    db,
+    @gen.UpsertTagWithSqlcArgParams::new("MoonBit", "moonbit", "MoonBit"),
+  )
+  @gen.upsert_tag_with_sqlc_arg(
+    db,
+    @gen.UpsertTagWithSqlcArgParams::new("Ignored", "moonbit", "MoonBit Lang"),
+  )
+  let tags = @gen.list_tags(db)
+  assert_eq(tags.length(), 1)
+  assert_eq(tags[0].name, "MoonBit Lang")
+  mf.dispose()
+}
+
+///|
 async test "D1: post tags relationship" {
   let mf = @cloudflare.Miniflare::new({
     ..@cloudflare.MiniflareOptions::default(),

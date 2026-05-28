@@ -149,3 +149,17 @@ test "emit_sql_doc_lines trims trailing whitespace per line" {
     #|
   assert_eq(out, expected)
 }
+
+///|
+test "emit_sql_doc_lines emits empty lines without trailing space" {
+  let buf = StringBuilder::new()
+  emit_sql_doc_lines(buf, "\nSELECT id\n\nFROM users")
+  let out = buf.to_string()
+  let expected =
+    #|///
+    #|/// SELECT id
+    #|///
+    #|/// FROM users
+    #|
+  assert_eq(out, expected)
+}

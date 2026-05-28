@@ -119,8 +119,12 @@ pub fn emit_sql_doc_lines(buf : StringBuilder, sql : String) -> Unit {
   }
   for line in lines {
     let trimmed = line.view().trim_end(chars=" \t")
-    buf.write_string("/// ")
-    buf.write_string(trimmed.to_owned())
+    if trimmed.length() == 0 {
+      buf.write_string("///")
+    } else {
+      buf.write_string("/// ")
+      buf.write_string(trimmed.to_owned())
+    }
     buf.write_string("\n")
   }
 }

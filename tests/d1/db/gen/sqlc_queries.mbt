@@ -340,6 +340,15 @@ pub async fn create_tag(db : @cloudflare.D1Database, params : CreateTagParams) -
   stmt.run() |> ignore
 }
 
+///| UpsertTagWithSqlcArg
+/// INSERT INTO tags (name, slug) VALUES (?, ?)
+/// ON CONFLICT (slug) DO UPDATE SET
+///   name = CASE WHEN ?3 <> '' THEN ?3 ELSE name END
+pub async fn upsert_tag_with_sqlc_arg(db : @cloudflare.D1Database, params : UpsertTagWithSqlcArgParams) -> Unit raise @cloudflare.D1Error {
+  let stmt = db.prepare(upsert_tag_with_sqlc_arg_sql).bind([@core.any(params.name), @core.any(params.slug), @core.any(params.new_name)])
+  stmt.run() |> ignore
+}
+
 ///| ListCommentsForPost
 ///
 /// SELECT id, post_id, author_name, author_email, content, is_approved, created_at FROM comments
@@ -779,7 +788,7 @@ pub async fn list_posts_with_authors_paginated(db : @cloudflare.D1Database, para
       id: d1_read_int64(d1_require_field(row, "id")),
       title: d1_require_field(row, "title").cast(),
       slug: d1_require_field(row, "slug").cast(),
-     excerpt: (if @core.is_null(row["excerpt"]) || @core.typeof_(row["excerpt"]) == "undefined" { None } else { Some(row["excerpt"].cast()) }),
+      excerpt: (if @core.is_null(row["excerpt"]) || @core.typeof_(row["excerpt"]) == "undefined" { None } else { Some(row["excerpt"].cast()) }),
       status: d1_require_field(row, "status").cast(),
       published_at: (if @core.is_null(row["published_at"]) || @core.typeof_(row["published_at"]) == "undefined" { None } else { Some(row["published_at"].cast()) }),
       created_at: d1_require_field(row, "created_at").cast(),

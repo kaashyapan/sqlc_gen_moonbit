@@ -81,6 +81,11 @@ SELECT * FROM tags ORDER BY name;
 -- name: CreateTag :exec
 INSERT INTO tags (name, slug) VALUES (?, ?);
 
+-- name: UpsertTagWithSqlcArg :exec
+INSERT INTO tags (name, slug) VALUES (?, ?)
+ON CONFLICT (slug) DO UPDATE SET
+  name = CASE WHEN sqlc.arg('new_name') <> '' THEN sqlc.arg('new_name') ELSE name END;
+
 -- ============================================
 -- Comment Queries
 -- ============================================

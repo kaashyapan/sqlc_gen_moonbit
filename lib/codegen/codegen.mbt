@@ -11,6 +11,11 @@ pub fn process_request(input : Bytes) -> Bytes {
   // Parse plugin options
   let options = parse_plugin_options(request.plugin_options)
 
+  // sqlc can leave sqlc.arg() calls inside ON CONFLICT DO UPDATE bodies
+  // without corresponding Query.params entries. Normalize before emitting
+  // types, SQL constants, bind expressions, validators, and schemas.
+  normalize_sqlc_args_in_request(request, options.backend)
+
   // Generate code files
   let files : Array[@plugin.File] = []
 
