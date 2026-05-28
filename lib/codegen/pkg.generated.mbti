@@ -155,14 +155,14 @@ pub struct TypeOverride {
 
 // Traits
 pub trait BackendCodeGen {
-  info(Self) -> BackendInfo
-  generate_helpers(Self, StringBuilder) -> Unit
-  param_bind_expr(Self, @plugin.Column, Int, String) -> String
-  column_read_expr(Self, @plugin.Column, Int, String) -> String
-  generate_one(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
-  generate_many(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
-  generate_exec(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
-  generate_execrows(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
-  generate_execlastid(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn info(Self) -> BackendInfo
+  fn generate_helpers(Self, StringBuilder) -> Unit
+  fn param_bind_expr(Self, @plugin.Column, Int, String) -> String
+  fn column_read_expr(Self, @plugin.Column, Int, String) -> String
+  fn generate_one(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn generate_many(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn generate_exec(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn generate_execrows(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn generate_execlastid(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
 }
 

@@ -67,7 +67,24 @@ test "generate_queries_d1 emits slice helper once" {
 }
 
 ///|
-test "generate_queries_d1 - static query path unchanged" {
+test "generate_queries_d1 emits Int64 bind helper once" {
+  let req = @plugin.GenerateRequest::{
+    settings: @plugin.Settings::default(),
+    catalog: @plugin.Catalog::default(),
+    queries: [],
+    sqlc_version: "",
+    plugin_options: Bytes::default(),
+    global_options: Bytes::default(),
+  }
+  let out = generate_queries_d1(req, [])
+  assert_true(
+    out.contains("extern \"js\" fn d1_bind_int64(value : Int64) -> @core.Any"),
+  )
+  assert_true(out.contains("#| (value) => Number(value)"))
+}
+
+///|
+test "generate_queries_d1 - static Int64 params use D1-safe Number bind" {
   let query = make_slice_query(
     "GetUser",
     ":one",
@@ -92,10 +109,43 @@ test "generate_queries_d1 - static query path unchanged" {
     global_options: Bytes::default(),
   }
   let out = generate_queries_d1(req, [])
-  // No slice => the existing static `.bind([...])` shape is preserved.
-  assert_true(out.contains(".bind([@core.any(params.id)])"))
+  // No slice => the static `.bind([...])` shape is preserved, but Int64
+  // params must not cross the D1 boundary as JS BigInt.
+  assert_true(out.contains(".bind([d1_bind_int64(params.id)])"))
+  assert_false(out.contains(".bind([@core.any(params.id)])"))
   assert_false(out.contains("let mut sql_text"))
   assert_false(out.contains("sqlc_slice_placeholders(params"))
+}
+
+///|
+test "generate_queries_d1 - nullable Int64 params use D1-safe Some arm" {
+  let query = make_slice_query(
+    "FindPost",
+    ":one",
+    "SELECT id FROM posts WHERE category_id = ?",
+    [
+      @plugin.Parameter::{
+        number: 1,
+        column: make_simple_column("category_id", "INTEGER", false, false),
+      },
+    ],
+    [make_simple_column("id", "INTEGER", true, false)],
+  )
+  let req = @plugin.GenerateRequest::{
+    settings: @plugin.Settings::default(),
+    catalog: @plugin.Catalog::default(),
+    queries: [query],
+    sqlc_version: "",
+    plugin_options: Bytes::default(),
+    global_options: Bytes::default(),
+  }
+  let out = generate_queries_d1(req, [])
+  assert_true(
+    out.contains(
+      ".bind([(match params.category_id { Some(v) => d1_bind_int64(v); None => @core.null() })])",
+    ),
+  )
+  assert_false(out.contains("Some(v) => @core.any(v)"))
 }
 
 ///|
@@ -134,7 +184,8 @@ test "generate_queries_d1 - slice param triggers dynamic SQL + bind loop" {
   // bind list built dynamically.
   assert_true(out.contains("let bind_args : Array[@core.Any] = []"))
   assert_true(out.contains("for slice_item in params.ids {"))
-  assert_true(out.contains("bind_args.push(@core.any(slice_item))"))
+  assert_true(out.contains("bind_args.push(d1_bind_int64(slice_item))"))
+  assert_false(out.contains("bind_args.push(@core.any(slice_item))"))
   assert_true(out.contains("db.prepare(sql_text).bind(bind_args)"))
   // Static path must NOT also fire.
   assert_false(out.contains(".bind([@core.any(params.ids)])"))

@@ -24,7 +24,7 @@ fn check_sqlite_error(db : @sqlite.Sqlite3, rc : Int) -> Unit raise SqlError {
 /// SELECT id, name, email, created_at FROM users WHERE id = ?
 pub fn get_user(db : @sqlite.Sqlite3, params : GetUserParams) -> GetUserRow? raise SqlError {
   let stmt = @sqlite.sqlite_prepare(db, cstring(get_user_sql))
-  @sqlite.sqlite_bind_int(stmt, 1, params.id.to_int()) |> ignore
+  @sqlite.sqlite_bind_int64(stmt, 1, params.id) |> ignore
   let rc = @sqlite.sqlite_step(stmt)
   if rc == @sqlite.SQLITE_ROW {
     let row : GetUserRow = {
@@ -90,7 +90,7 @@ pub fn update_user(db : @sqlite.Sqlite3, params : UpdateUserParams) -> Int raise
   let stmt = @sqlite.sqlite_prepare(db, cstring(update_user_sql))
   @sqlite.sqlite_bind_text(stmt, 1, cstring(params.name)) |> ignore
   @sqlite.sqlite_bind_text(stmt, 2, cstring(params.email)) |> ignore
-  @sqlite.sqlite_bind_int(stmt, 3, params.id.to_int()) |> ignore
+  @sqlite.sqlite_bind_int64(stmt, 3, params.id) |> ignore
   let rc = @sqlite.sqlite_step(stmt)
   @sqlite.sqlite_finalize(stmt)
   check_sqlite_error(db, rc)
@@ -101,10 +101,9 @@ pub fn update_user(db : @sqlite.Sqlite3, params : UpdateUserParams) -> Int raise
 /// DELETE FROM users WHERE id = ?
 pub fn delete_user(db : @sqlite.Sqlite3, params : DeleteUserParams) -> Int raise SqlError {
   let stmt = @sqlite.sqlite_prepare(db, cstring(delete_user_sql))
-  @sqlite.sqlite_bind_int(stmt, 1, params.id.to_int()) |> ignore
+  @sqlite.sqlite_bind_int64(stmt, 1, params.id) |> ignore
   let rc = @sqlite.sqlite_step(stmt)
   @sqlite.sqlite_finalize(stmt)
   check_sqlite_error(db, rc)
   @sqlite.sqlite_changes(db)
 }
-

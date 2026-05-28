@@ -46,6 +46,6 @@ fn main {
   try {
     run()
   } catch {
-    e => println("Error: " + e.to_string())
+    _ => println("Error")
   }
 }

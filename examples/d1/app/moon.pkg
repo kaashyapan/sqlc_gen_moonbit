@@ -9,11 +9,8 @@ import {
   "example_d1/db/gen",
 }
 
+supported_targets = "js"
+
 options(
-  link: {
-    "js": {
-      "exports": ["get_handler"],
-    },
-  },
-  "supported-targets": [ "js" ],
+  link: { "js": { "exports": [ "get_handler" ] } },
 )

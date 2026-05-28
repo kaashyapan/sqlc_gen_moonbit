@@ -36,8 +36,8 @@ version: "2"
 plugins:
   - name: moonbit
     wasm:
-      url: "https://github.com/mizchi/sqlc_gen_moonbit/releases/download/v0.2.1/sqlc-gen-moonbit.wasm"
-      sha256: "26eb1d10957f0f4f0197ab204a4ef5a0c9052f10ac40bdf242ae9e223cb5b820"
+      url: "https://github.com/mizchi/sqlc_gen_moonbit/releases/download/v0.3.0/sqlc-gen-moonbit.wasm"
+      sha256: "2dea57f3b827c6542aed2401639a9cb4b8d7385555709f4a68b75a7705134cb1"
 sql:
   - engine: sqlite
     schema: "schema.sql"
@@ -289,24 +289,26 @@ For each query, sqlc-gen-moonbit generates:
 | `:execrows`| `Int`       | Returns number of affected rows |
 | `:execlastid` | `Int64`  | Returns last inserted ID (for `INSERT ... RETURNING id`) |
 
-### `Int64` parameters bind as `BigInt` on JS targets
+### D1 `Int64` parameters bind as JavaScript `Number`
 
-On the JS-target backends (`d1`, `sqlite_js`, `postgres_js`,
-`mysql_js`), `Int64` parameters — `limit`, `offset`, any `BIGINT`
-column, etc. — reach the underlying `D1PreparedStatement.bind(...)`
-or driver as a JavaScript `BigInt`. Real D1 and the JS drivers
-accept it, but tests that introspect bound params need to compare
-against `BigInt` literals rather than plain `Number`:
+The `d1` backend converts `Int64` parameters — `limit`, `offset`,
+`BIGINT` columns, and nullable `Int64` `Some(v)` arms — through a
+generated `d1_bind_int64(v)` helper before calling
+`D1PreparedStatement.bind(...)`.
+
+This keeps MoonBit JS-target `BigInt` values away from Cloudflare D1.
+Passing a `BigInt` to D1 can hang the Worker request instead of
+throwing, so generated D1 code emits `Number(value)` for Int64 bind
+values. Recording mocks for D1 should therefore expect plain numbers:
 
 ```js
-// recording mock comparing the bound params
-assert.deepEqual(call.params, ["mizchi", 100, 0]);     // ❌ fails
-assert.deepEqual(call.params, ["mizchi", 100n, 0n]);   // ✅ passes
+assert.deepEqual(call.params, ["mizchi", 100, 0]);
 ```
 
-This catches callers migrating from hand-rolled `db.prepare(...)`
-code that used to bind plain `Number`. Tracking as [#6](https://github.com/mizchi/sqlc_gen_moonbit/issues/6)
-in case a future opt-in option narrows safe values back to `Number`.
+Values outside JavaScript's safe integer range may lose precision. This
+matches D1's practical read-path behavior, where SQLite INTEGER cells
+come back to JavaScript as numbers. See
+[#22](https://github.com/mizchi/sqlc_gen_moonbit/issues/22).
 
 ## Standalone Code Generation
 
@@ -443,8 +445,9 @@ The pattern:
    plus any rendering context and returns the final string / HTML /
    markdown.
 
-```moonbit
+```moonbit nocheck
 // 1. Sqlc-generated query lives in the `@db` package.
+///|
 async fn list_pages_markdown(
   binding : String,
   handle : String,
@@ -463,7 +466,11 @@ async fn list_pages_markdown(
   render_pages_markdown(rows_json, handle)
 }
 
-extern "js" fn render_pages_markdown(rows_json : String, handle : String) -> String =
+///|
+extern "js" fn render_pages_markdown(
+  rows_json : String,
+  handle : String,
+) -> String =
   #| (rowsJson, handle) => {
   #|   const rows = JSON.parse(rowsJson);
   #|   // ...pure string building (escape, sort, format)...
@@ -476,10 +483,9 @@ Notes when migrating an existing inline `db.prepare(...)` block:
 - Drop `.wait()` in callers that previously expected a
   `@js_async.Promise[String]` — a MoonBit `async fn` returns `String`
   directly.
-- `Int64` parameters (limit/offset etc.) bind as `BigInt` at the JS
-  boundary, so recording test mocks that compare `call.params` need
-  `BigInt` literals (`100n`, `0n`) instead of `Number`. See
-  [issue #6](https://github.com/mizchi/sqlc_gen_moonbit/issues/6).
+- D1 `Int64` parameters (limit/offset etc.) bind as JavaScript
+  `Number`, not `BigInt`, to avoid Cloudflare D1 request hangs. See
+  [issue #22](https://github.com/mizchi/sqlc_gen_moonbit/issues/22).
 - Keep escaping / URL building / DOM-shaped output in the JS half;
   only the SQL round-trip moves to MoonBit.
 - Wrap row fields in a small `safe_str` / `fallback_str` helper

@@ -34,6 +34,20 @@ pub fn generate_queries_d1(
       #|  value
       #|}
       #|
+      #|///| Convert MoonBit Int64 params to a JavaScript Number before
+      #|/// binding. Cloudflare D1 can hang instead of rejecting when a
+      #|/// JS BigInt reaches `D1PreparedStatement.bind(...)`.
+      #|extern "js" fn d1_bind_int64(value : Int64) -> @core.Any =
+      #|  #| (value) => Number(value)
+      #|
+      #|///| Convert a JavaScript D1 integer cell to MoonBit Int64.
+      #|extern "js" fn d1_read_int64(value : @core.Any) -> Int64 =
+      #|  #| (value) => BigInt(Math.trunc(Number(value)))
+      #|
+      #|///| Convert a JavaScript D1 integer cell to MoonBit Int.
+      #|extern "js" fn d1_read_int(value : @core.Any) -> Int =
+      #|  #| (value) => Number(value) | 0
+      #|
       #|///| Expand a sqlc.slice('name') placeholder to a comma-separated
       #|/// list of `?` placeholders matching the slice length. An empty
       #|/// slice expands to `NULL` so `WHERE col IN (NULL)` short-circuits
@@ -188,7 +202,9 @@ fn generate_query_function_d1(
       if col.is_sqlc_slice {
         buf.write_string("  for slice_item in params.")
         buf.write_string(param_name)
-        buf.write_string(" {\n    bind_args.push(@core.any(slice_item))\n  }\n")
+        buf.write_string(" {\n    bind_args.push(")
+        buf.write_string(d1_non_nullable_param_to_core_any(col, "slice_item"))
+        buf.write_string(")\n  }\n")
       } else {
         buf.write_string("  bind_args.push(")
         buf.write_string(d1_param_to_core_any(col, "params." + param_name))
@@ -258,23 +274,36 @@ fn generate_query_function_d1(
 
 ///|
 fn d1_param_to_core_any(col : @plugin.Column, expr : String) -> String {
-  let type_name = col.type_.name.to_upper()
   // For nullable types, we need to handle Option
   let is_nullable = !col.not_null
   if is_nullable {
     // For nullable params, use match to handle None - @core.null() for null value
-    "(match " + expr + " { Some(v) => @core.any(v); None => @core.null() })"
+    "(match " +
+    expr +
+    " { Some(v) => " +
+    d1_non_nullable_param_to_core_any(col, "v") +
+    "; None => @core.null() })"
   } else {
-    match type_name {
-      "INTEGER" | "INT" | "INT4" | "SMALLINT" | "INT8" | "BIGINT" =>
-        "@core.any(" + expr + ")"
-      "REAL" | "FLOAT" | "DOUBLE" | "NUMERIC" | "DECIMAL" =>
-        "@core.any(" + expr + ")"
-      "TEXT" | "VARCHAR" | "CHAR" | "CHARACTER" | "CLOB" =>
-        "@core.any(" + expr + ")"
-      "BOOLEAN" | "BOOL" => "@core.any(" + expr + ")"
-      _ => "@core.any(" + expr + ".to_string())"
-    }
+    d1_non_nullable_param_to_core_any(col, expr)
+  }
+}
+
+///|
+fn d1_non_nullable_param_to_core_any(
+  col : @plugin.Column,
+  expr : String,
+) -> String {
+  let type_name = col.type_.name.to_upper()
+  match type_name {
+    "INTEGER" | "INT" | "INT4" | "INT8" | "BIGINT" | "SERIAL" | "BIGSERIAL" =>
+      "d1_bind_int64(" + expr + ")"
+    "INT2" | "SMALLINT" => "@core.any(" + expr + ")"
+    "REAL" | "FLOAT" | "DOUBLE" | "NUMERIC" | "DECIMAL" =>
+      "@core.any(" + expr + ")"
+    "TEXT" | "VARCHAR" | "CHAR" | "CHARACTER" | "CLOB" =>
+      "@core.any(" + expr + ")"
+    "BOOLEAN" | "BOOL" => "@core.any(" + expr + ")"
+    _ => "@core.any(" + expr + ".to_string())"
   }
 }
 
@@ -293,7 +322,7 @@ fn d1_column_from_core_any(col : @plugin.Column, obj_expr : String) -> String {
         field_access +
         ") || @core.typeof_(" +
         field_access +
-        ") == \"undefined\" { None } else { Some(@cloudflare.js_number_to_int64(" +
+        ") == \"undefined\" { None } else { Some(d1_read_int64(" +
         field_access +
         ")) })"
       "SMALLINT" =>
@@ -301,15 +330,15 @@ fn d1_column_from_core_any(col : @plugin.Column, obj_expr : String) -> String {
         field_access +
         ") || @core.typeof_(" +
         field_access +
-        ") == \"undefined\" { None } else { Some(@cloudflare.js_number_to_int64(" +
+        ") == \"undefined\" { None } else { Some(d1_read_int(" +
         field_access +
-        ").to_int()) })"
+        ")) })"
       "INT8" | "BIGINT" =>
         "(if @core.is_null(" +
         field_access +
         ") || @core.typeof_(" +
         field_access +
-        ") == \"undefined\" { None } else { Some(@cloudflare.js_number_to_int64(" +
+        ") == \"undefined\" { None } else { Some(d1_read_int64(" +
         field_access +
         ")) })"
       _ =>
@@ -327,13 +356,12 @@ fn d1_column_from_core_any(col : @plugin.Column, obj_expr : String) -> String {
     // than leaking `undefined` into a MoonBit value via `cast()`.
     let required = "d1_require_field(" + obj_expr + ", " + field_name + ")"
     match type_name {
-      // Use @cloudflare.js_number_to_int64 for INTEGER types
-      // D1/SQLite returns JavaScript numbers which need conversion to MoonBit Int64 ({hi, lo} format)
+      // D1/SQLite returns JavaScript numbers; generated local helpers
+      // convert them to MoonBit integer values for the active JS target.
       // For smaller integer types (INTEGER, INT, INT4, SMALLINT), convert to Int
-      "INTEGER" | "INT" | "INT4" =>
-        "@cloudflare.js_number_to_int64(" + required + ")"
-      "SMALLINT" => "@cloudflare.js_number_to_int64(" + required + ").to_int()"
-      "INT8" | "BIGINT" => "@cloudflare.js_number_to_int64(" + required + ")"
+      "INTEGER" | "INT" | "INT4" => "d1_read_int64(" + required + ")"
+      "SMALLINT" => "d1_read_int(" + required + ")"
+      "INT8" | "BIGINT" => "d1_read_int64(" + required + ")"
       "REAL" | "FLOAT" | "DOUBLE" | "NUMERIC" | "DECIMAL" =>
         required + ".cast()"
       "TEXT" | "VARCHAR" | "CHAR" | "CHARACTER" | "CLOB" => required + ".cast()"

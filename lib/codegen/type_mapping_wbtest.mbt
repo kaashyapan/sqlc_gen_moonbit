@@ -20,7 +20,7 @@ test "INTEGER mapping uses Int64 conversions" {
   let sqlite_js_expr = sqlite_js_column_from_sql_value(col, 0)
   assert_true(sqlite_js_expr.contains("to_int64"))
   let d1_expr = d1_column_from_core_any(col, "row")
-  assert_true(d1_expr.contains("js_number_to_int64"))
+  assert_true(d1_expr.contains("d1_read_int64"))
   assert_true(!d1_expr.contains("to_int("))
 }
 
@@ -35,7 +35,7 @@ test "d1 non-nullable column reads route through d1_require_field" {
   int_col.name = "id"
   let int_expr = d1_column_from_core_any(int_col, "row")
   assert_true(int_expr.contains("d1_require_field(row, \"id\")"))
-  assert_true(int_expr.contains("js_number_to_int64"))
+  assert_true(int_expr.contains("d1_read_int64"))
 }
 
 ///|
@@ -77,6 +77,19 @@ test "d1 generated module emits d1_require_field helper exactly once" {
   assert_eq(count, 1)
   // And the generated query function actually calls the helper.
   assert_true(out.contains("d1_require_field(result, \"slug\")"))
+}
+
+///|
+test "d1 generated module emits local integer read helpers" {
+  let request = @plugin.GenerateRequest::default()
+  let out = generate_queries_d1(request, [])
+  assert_true(
+    out.contains("extern \"js\" fn d1_read_int64(value : @core.Any) -> Int64"),
+  )
+  assert_true(
+    out.contains("extern \"js\" fn d1_read_int(value : @core.Any) -> Int"),
+  )
+  assert_true(out.contains("BigInt(Math.trunc(Number(value)))"))
 }
 
 ///|
