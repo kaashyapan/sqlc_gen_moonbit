@@ -107,6 +107,16 @@ ORDER BY created_at ASC;
 INSERT INTO comments (post_id, author_name, author_email, content)
 VALUES (?, ?, ?, ?);
 
+-- name: ListCommentAggregateCandidates :many
+SELECT
+  post_id,
+  COUNT(id) AS comment_count,
+  COALESCE(SUM(is_approved), 0) AS approved_count
+FROM comments
+GROUP BY post_id
+HAVING COUNT(id) >= sqlc.arg('min_comments')
+   OR COALESCE(SUM(is_approved), 0) >= sqlc.arg('min_approved');
+
 -- ============================================
 -- JOIN Queries
 -- ============================================

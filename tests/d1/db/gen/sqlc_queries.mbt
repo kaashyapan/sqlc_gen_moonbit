@@ -395,6 +395,30 @@ pub async fn create_comment(db : @cloudflare.D1Database, params : CreateCommentP
   stmt.run() |> ignore
 }
 
+///| ListCommentAggregateCandidates
+/// SELECT
+///   post_id,
+///   COUNT(id) AS comment_count,
+///   COALESCE(SUM(is_approved), 0) AS approved_count
+/// FROM comments
+/// GROUP BY post_id
+/// HAVING COUNT(id) >= ?1
+///    OR COALESCE(SUM(is_approved), 0) >= ?2
+pub async fn list_comment_aggregate_candidates(db : @cloudflare.D1Database, params : ListCommentAggregateCandidatesParams) -> Array[ListCommentAggregateCandidatesRow] raise @cloudflare.D1Error {
+  let stmt = db.prepare(list_comment_aggregate_candidates_sql).bind([d1_bind_int64(params.min_comments), d1_bind_int64(params.min_approved)])
+  let d1_result = stmt.all()
+  let results_arr = d1_result.get_results()
+  let results : Array[ListCommentAggregateCandidatesRow] = []
+  for row in results_arr {
+    results.push({
+      post_id: d1_read_int64(d1_require_field(row, "post_id")),
+      comment_count: d1_read_int64(d1_require_field(row, "comment_count")),
+      approved_count: d1_read_int64(d1_require_field(row, "approved_count")),
+    })
+  }
+  results
+}
+
 ///| GetPostWithAuthor
 ///
 /// SELECT

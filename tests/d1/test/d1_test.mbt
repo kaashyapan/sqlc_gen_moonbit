@@ -267,6 +267,31 @@ async test "D1: comments" {
 }
 
 ///|
+async test "D1: aggregate sqlc.arg inference" {
+  let mf = @cloudflare.Miniflare::new({
+    ..@cloudflare.MiniflareOptions::default(),
+    d1Databases: Some(["TEST_DB"]),
+  })
+  mf.ready()
+  let db = mf.get_d1_database("TEST_DB")
+  let _ = db.exec(get_schema_sql())
+  @gen.create_user(db, @gen.CreateUserParams::new("alice", "alice@example.com", "Alice", None, None))
+  @gen.create_post(db, @gen.CreatePostParams::new(1L, None, "Post", "post", "Content", None, "draft"))
+  @gen.create_comment(db, @gen.CreateCommentParams::new(1L, "Alice", "alice@example.com", "First"))
+  @gen.create_comment(db, @gen.CreateCommentParams::new(1L, "Bob", "bob@example.com", "Second"))
+  @gen.approve_comment(db, @gen.ApproveCommentParams::new(1L))
+  let rows = @gen.list_comment_aggregate_candidates(
+    db,
+    @gen.ListCommentAggregateCandidatesParams::new(2L, 1L),
+  )
+  assert_eq(rows.length(), 1)
+  assert_eq(rows[0].post_id, 1L)
+  assert_eq(rows[0].comment_count, 2L)
+  assert_eq(rows[0].approved_count, 1L)
+  mf.dispose()
+}
+
+///|
 async test "D1: post with author JOIN" {
   let mf = @cloudflare.Miniflare::new({
     ..@cloudflare.MiniflareOptions::default(),

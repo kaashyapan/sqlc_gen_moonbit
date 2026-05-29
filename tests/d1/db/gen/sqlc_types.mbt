@@ -132,6 +132,13 @@ pub struct ListCommentsForPostRow {
 } derive(Debug, Eq)
 
 ///|
+pub struct ListCommentAggregateCandidatesRow {
+  post_id : Int64
+  comment_count : Int64
+  approved_count : Int64
+} derive(Debug, Eq)
+
+///|
 pub struct GetPostWithAuthorRow {
   id : Int64
   title : String
@@ -543,6 +550,17 @@ pub fn CreateCommentParams::new(post_id : Int64, author_name : String, author_em
 }
 
 ///|
+pub struct ListCommentAggregateCandidatesParams {
+  min_comments : Int64
+  min_approved : Int64
+} derive(Debug, Eq)
+
+///|
+pub fn ListCommentAggregateCandidatesParams::new(min_comments : Int64, min_approved : Int64) -> ListCommentAggregateCandidatesParams {
+  { min_comments, min_approved }
+}
+
+///|
 pub struct GetPostWithAuthorParams {
   id : Int64
 } derive(Debug, Eq)
@@ -799,6 +817,8 @@ pub let delete_tag_after_body_comments_sql : String = "DELETE FROM tags WHERE sl
 pub let list_comments_for_post_sql : String = "\nSELECT id, post_id, author_name, author_email, content, is_approved, created_at FROM comments\nWHERE post_id = ? AND is_approved = 1\nORDER BY created_at ASC"
 
 pub let create_comment_sql : String = "INSERT INTO comments (post_id, author_name, author_email, content)\nVALUES (?, ?, ?, ?)"
+
+pub let list_comment_aggregate_candidates_sql : String = "SELECT\n  post_id,\n  COUNT(id) AS comment_count,\n  COALESCE(SUM(is_approved), 0) AS approved_count\nFROM comments\nGROUP BY post_id\nHAVING COUNT(id) >= ?1\n   OR COALESCE(SUM(is_approved), 0) >= ?2"
 
 pub let get_post_with_author_sql : String = "\nSELECT\n  p.id, p.title, p.slug, p.content, p.excerpt, p.status,\n  p.published_at, p.created_at, p.updated_at,\n  u.id as author_id, u.username as author_username,\n  u.display_name as author_display_name, u.avatar_url as author_avatar_url\nFROM posts p\nINNER JOIN users u ON p.author_id = u.id\nWHERE p.id = ?"
 

@@ -1,7 +1,7 @@
-/// Plugin-side fixup for sqlc.arg() expressions that sqlc leaves inside
-/// INSERT ... ON CONFLICT DO UPDATE bodies. sqlc usually rewrites named args
-/// to numbered placeholders and includes them in Query.params, but this path
-/// can arrive with raw sqlc.arg('name') text and no matching param.
+/// Plugin-side fixup for sqlc.arg() / aggregate inference gaps that sqlc can
+/// leave in SQLite/D1 requests. sqlc usually rewrites named args to numbered
+/// placeholders and includes them in Query.params, but some contexts arrive
+/// with raw sqlc.arg('name') text and no matching param.
 
 priv struct SqlcArgOccurrence {
   name : String
@@ -27,6 +27,7 @@ fn normalize_sqlc_args_in_query(
   query : @plugin.Query,
   backend : Backend,
 ) -> Unit {
+  normalize_aggregate_result_columns(catalog, query)
   let occurrences = find_sqlc_arg_occurrences(query.text)
   if occurrences.length() == 0 {
     return
@@ -50,11 +51,12 @@ fn normalize_sqlc_args_in_query(
     match find_param_number_by_name(query, occurrence.name) {
       Some(_) => ()
       None => {
-        let target_col_name = match infer_assignment_column_name(
-          query.text,
-          occurrence.start,
+        let source_col = match infer_sqlc_arg_source_column(
+          catalog,
+          query,
+          occurrence,
         ) {
-          Some(name) => name
+          Some(col) => col
           None =>
             abort(
               "unsupported: could not infer type for sqlc.arg('" +
@@ -62,23 +64,6 @@ fn normalize_sqlc_args_in_query(
               "') in query " +
               query.name +
               ". Use a positional ? parameter or add an explicit CAST.",
-            )
-        }
-        let source_col = match find_catalog_column(
-          catalog,
-          query.insert_into_table.name,
-          target_col_name,
-        ) {
-          Some(col) => col
-          None =>
-            abort(
-              "unsupported: could not find target column '" +
-              target_col_name +
-              "' for sqlc.arg('" +
-              occurrence.name +
-              "') in query " +
-              query.name +
-              ". Use a positional ? parameter or split the query.",
             )
         }
         max_number = max_number + 1
@@ -92,6 +77,45 @@ fn normalize_sqlc_args_in_query(
     }
   }
   query.text = rewrite_sqlc_arg_occurrences(query.text, occurrences, query, backend)
+}
+
+///|
+fn infer_sqlc_arg_source_column(
+  catalog : @plugin.Catalog,
+  query : @plugin.Query,
+  occurrence : SqlcArgOccurrence,
+) -> @plugin.Column? {
+  match infer_assignment_column_name(query.text, occurrence.start) {
+    Some(target_col_name) =>
+      match find_catalog_column(catalog, query.insert_into_table.name, target_col_name) {
+        Some(col) => return Some(col)
+        None => ()
+      }
+    None => ()
+  }
+  infer_aggregate_arg_column(catalog, query.text, occurrence.start)
+}
+
+///|
+fn normalize_aggregate_result_columns(
+  catalog : @plugin.Catalog,
+  query : @plugin.Query,
+) -> Unit {
+  for i = 0; i < query.columns.length(); i = i + 1 {
+    let col = query.columns[i]
+    if col.type_.name.to_upper() == "ANY" {
+      match infer_coalesce_sum_column(catalog, query.text, col.name) {
+        Some(source) => {
+          col.type_ = source.type_
+          // COALESCE(SUM(...), 0) is non-null even when SUM() alone would
+          // be nullable for an empty group.
+          col.not_null = true
+          query.columns[i] = col
+        }
+        None => ()
+      }
+    }
+  }
 }
 
 ///|
@@ -266,6 +290,173 @@ fn find_catalog_column(
 }
 
 ///|
+fn infer_aggregate_arg_column(
+  catalog : @plugin.Catalog,
+  text : String,
+  arg_start : Int,
+) -> @plugin.Column? {
+  match comparison_lhs_before_arg(text, arg_start) {
+    Some(lhs) => {
+      let upper = lhs.to_upper()
+      if upper.contains("COUNT(") {
+        return Some(synthetic_type_source_column("INTEGER"))
+      }
+      if upper.contains("SUM(") {
+        match infer_sum_source_column(catalog, text, arg_start) {
+          Some(col) => return Some(col)
+          None => ()
+        }
+      }
+      None
+    }
+    None => None
+  }
+}
+
+///|
+fn comparison_lhs_before_arg(text : String, arg_start : Int) -> String? {
+  let mut i = arg_start - 1
+  while i >= 0 && is_ascii_space(text[i].to_int().unsafe_to_char()) {
+    i = i - 1
+  }
+  if i < 0 {
+    return None
+  }
+  let op_start = if text[i] == '=' {
+    if i > 0 &&
+       (text[i - 1] == '>' || text[i - 1] == '<' || text[i - 1] == '!') {
+      i - 1
+    } else {
+      i
+    }
+  } else if text[i] == '>' || text[i] == '<' {
+    i
+  } else {
+    return None
+  }
+  let mut start = op_start - 1
+  while start >= 0 && text[start] != '\n' {
+    start = start - 1
+  }
+  Some(substring(text, start + 1, op_start))
+}
+
+///|
+fn infer_coalesce_sum_column(
+  catalog : @plugin.Catalog,
+  text : String,
+  alias_name : String,
+) -> @plugin.Column? {
+  let upper = text.to_upper()
+  let alias_marker = " AS " + alias_name.to_upper()
+  match find_substring(upper, alias_marker) {
+    Some(alias_idx) =>
+      match find_last_substring_before(upper, "SUM(", alias_idx) {
+        Some(sum_idx) =>
+          match find_last_substring_before(upper, "COALESCE(", sum_idx) {
+            Some(coalesce_idx) =>
+              if is_only_ascii_space_between(
+                text,
+                coalesce_idx + "COALESCE(".length(),
+                sum_idx,
+              ) {
+                match parse_function_identifier_arg(text, sum_idx + "SUM(".length()) {
+                  Some(col_name) =>
+                    match find_catalog_column(catalog, "", col_name) {
+                      Some(col) => Some(col)
+                      None => None
+                    }
+                  None => None
+                }
+              } else {
+                None
+              }
+            None => None
+          }
+        None => None
+      }
+    None => None
+  }
+}
+
+///|
+fn infer_sum_source_column(
+  catalog : @plugin.Catalog,
+  text : String,
+  before : Int,
+) -> @plugin.Column? {
+  let upper = text.to_upper()
+  match find_last_substring_before(upper, "SUM(", before) {
+    Some(sum_idx) =>
+      match parse_function_identifier_arg(text, sum_idx + "SUM(".length()) {
+        Some(col_name) =>
+          match find_catalog_column(catalog, "", col_name) {
+            Some(col) => Some(col)
+            None => None
+          }
+        None => None
+      }
+    None => None
+  }
+}
+
+///|
+fn parse_function_identifier_arg(text : String, start : Int) -> String? {
+  let mut i = start
+  while i < text.length() && is_ascii_space(text[i].to_int().unsafe_to_char()) {
+    i = i + 1
+  }
+  let arg_start = i
+  while i < text.length() &&
+        is_sql_identifier_char(text[i].to_int().unsafe_to_char()) {
+    i = i + 1
+  }
+  if i == arg_start {
+    None
+  } else {
+    Some(unqualify_identifier(substring(text, arg_start, i)))
+  }
+}
+
+///|
+fn find_last_substring_before(
+  haystack : String,
+  needle : String,
+  before : Int,
+) -> Int? {
+  if needle.length() == 0 || before <= 0 {
+    return None
+  }
+  let mut last = -1
+  let limit = if before > haystack.length() { haystack.length() } else { before }
+  let mut i = 0
+  while i + needle.length() <= limit {
+    if string_matches_at(haystack, i, needle) {
+      last = i
+      i = i + needle.length()
+    } else {
+      i = i + 1
+    }
+  }
+  if last >= 0 { Some(last) } else { None }
+}
+
+///|
+fn is_only_ascii_space_between(text : String, start : Int, end : Int) -> Bool {
+  if start > end {
+    return false
+  }
+  let mut i = start
+  while i < end {
+    if !is_ascii_space(text[i].to_int().unsafe_to_char()) {
+      return false
+    }
+    i = i + 1
+  }
+  true
+}
+
+///|
 fn synthetic_named_param_column(
   name : String,
   source : @plugin.Column,
@@ -286,6 +477,28 @@ fn synthetic_named_param_column(
     embed_table: @plugin.Identifier::default(),
     original_name: source.name,
     unsigned: source.unsigned,
+    array_dims: 0,
+  }
+}
+
+///|
+fn synthetic_type_source_column(type_name : String) -> @plugin.Column {
+  @plugin.Column::{
+    name: "",
+    not_null: true,
+    is_array: false,
+    comment: "",
+    length: -1,
+    is_named_param: false,
+    is_func_call: true,
+    scope: "",
+    table: @plugin.Identifier::default(),
+    table_alias: "",
+    type_: @plugin.Identifier::{ catalog: "", schema: "", name: type_name },
+    is_sqlc_slice: false,
+    embed_table: @plugin.Identifier::default(),
+    original_name: "",
+    unsigned: false,
     array_dims: 0,
   }
 }

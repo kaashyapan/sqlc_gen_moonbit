@@ -206,6 +206,12 @@ pub fn CreateCommentParams::validate(self : CreateCommentParams) -> Result[Unit,
 }
 
 ///|
+/// Validate ListCommentAggregateCandidatesParams
+pub fn ListCommentAggregateCandidatesParams::validate(_self : ListCommentAggregateCandidatesParams) -> Result[Unit, String] {
+  Ok(())
+}
+
+///|
 /// Validate GetPostWithAuthorParams
 pub fn GetPostWithAuthorParams::validate(_self : GetPostWithAuthorParams) -> Result[Unit, String] {
   Ok(())

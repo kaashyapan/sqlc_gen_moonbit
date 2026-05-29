@@ -172,6 +172,14 @@
       },
       "required": ["post_id", "author_name", "author_email", "content"]
     },
+    "ListCommentAggregateCandidatesParams": {
+      "type": "object",
+      "properties": {
+        "min_comments": { "type": "integer" },
+        "min_approved": { "type": "integer" }
+      },
+      "required": ["min_comments", "min_approved"]
+    },
     "GetPostWithAuthorParams": {
       "type": "object",
       "properties": {
@@ -472,6 +480,15 @@
         "created_at": { "type": "string" }
       },
       "required": ["id", "post_id", "author_name", "author_email", "content", "is_approved", "created_at"]
+    },
+    "ListCommentAggregateCandidatesRow": {
+      "type": "object",
+      "properties": {
+        "post_id": { "type": "integer" },
+        "comment_count": { "type": "integer" },
+        "approved_count": { "type": "integer" }
+      },
+      "required": ["post_id", "comment_count", "approved_count"]
     },
     "GetPostWithAuthorRow": {
       "type": "object",
