@@ -349,6 +349,20 @@ pub async fn upsert_tag_with_sqlc_arg(db : @cloudflare.D1Database, params : Upse
   stmt.run() |> ignore
 }
 
+///| CreateTagWithBodyComments
+/// INSERT INTO tags (name, slug) VALUES (?, ?)
+pub async fn create_tag_with_body_comments(db : @cloudflare.D1Database, params : CreateTagWithBodyCommentsParams) -> Unit raise @cloudflare.D1Error {
+  let stmt = db.prepare(create_tag_with_body_comments_sql).bind([@core.any(params.name), @core.any(params.slug)])
+  stmt.run() |> ignore
+}
+
+///| DeleteTagAfterBodyComments
+/// DELETE FROM tags WHERE slug = ?
+pub async fn delete_tag_after_body_comments(db : @cloudflare.D1Database, params : DeleteTagAfterBodyCommentsParams) -> Unit raise @cloudflare.D1Error {
+  let stmt = db.prepare(delete_tag_after_body_comments_sql).bind([@core.any(params.slug)])
+  stmt.run() |> ignore
+}
+
 ///| ListCommentsForPost
 ///
 /// SELECT id, post_id, author_name, author_email, content, is_approved, created_at FROM comments

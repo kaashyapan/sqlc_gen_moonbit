@@ -140,6 +140,21 @@
       },
       "required": ["name", "slug", "new_name"]
     },
+    "CreateTagWithBodyCommentsParams": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "slug": { "type": "string" }
+      },
+      "required": ["name", "slug"]
+    },
+    "DeleteTagAfterBodyCommentsParams": {
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string" }
+      },
+      "required": ["slug"]
+    },
     "ListCommentsForPostParams": {
       "type": "object",
       "properties": {

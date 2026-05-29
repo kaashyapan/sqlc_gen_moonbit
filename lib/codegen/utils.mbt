@@ -168,7 +168,7 @@ pub fn string_to_utf8(s : String) -> Bytes {
       arr.push((0x80U | (code & 0x3FU)).to_byte())
     }
   }
-  Bytes::from_iter(arr.iter())
+  Bytes::from_array(arr)
 }
 
 ///|

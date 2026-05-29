@@ -164,6 +164,27 @@ pub fn UpsertTagWithSqlcArgParams::validate(self : UpsertTagWithSqlcArgParams) -
 }
 
 ///|
+/// Validate CreateTagWithBodyCommentsParams
+pub fn CreateTagWithBodyCommentsParams::validate(self : CreateTagWithBodyCommentsParams) -> Result[Unit, String] {
+  if self.name.length() == 0 {
+    return Err("name is required")
+  }
+  if self.slug.length() == 0 {
+    return Err("slug is required")
+  }
+  Ok(())
+}
+
+///|
+/// Validate DeleteTagAfterBodyCommentsParams
+pub fn DeleteTagAfterBodyCommentsParams::validate(self : DeleteTagAfterBodyCommentsParams) -> Result[Unit, String] {
+  if self.slug.length() == 0 {
+    return Err("slug is required")
+  }
+  Ok(())
+}
+
+///|
 /// Validate ListCommentsForPostParams
 pub fn ListCommentsForPostParams::validate(_self : ListCommentsForPostParams) -> Result[Unit, String] {
   Ok(())

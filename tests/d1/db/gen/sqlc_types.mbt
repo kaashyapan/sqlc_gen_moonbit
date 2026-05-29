@@ -499,6 +499,27 @@ pub fn UpsertTagWithSqlcArgParams::new(name : String, slug : String, new_name : 
 }
 
 ///|
+pub struct CreateTagWithBodyCommentsParams {
+  name : String
+  slug : String
+} derive(Debug, Eq)
+
+///|
+pub fn CreateTagWithBodyCommentsParams::new(name : String, slug : String) -> CreateTagWithBodyCommentsParams {
+  { name, slug }
+}
+
+///|
+pub struct DeleteTagAfterBodyCommentsParams {
+  slug : String
+} derive(Debug, Eq)
+
+///|
+pub fn DeleteTagAfterBodyCommentsParams::new(slug : String) -> DeleteTagAfterBodyCommentsParams {
+  { slug, }
+}
+
+///|
 pub struct ListCommentsForPostParams {
   post_id : Int64
 } derive(Debug, Eq)
@@ -770,6 +791,10 @@ pub let list_tags_sql : String = "\nSELECT id, name, slug FROM tags ORDER BY nam
 pub let create_tag_sql : String = "INSERT INTO tags (name, slug) VALUES (?, ?)"
 
 pub let upsert_tag_with_sqlc_arg_sql : String = "INSERT INTO tags (name, slug) VALUES (?, ?)\nON CONFLICT (slug) DO UPDATE SET\n  name = CASE WHEN ?3 <> '' THEN ?3 ELSE name END"
+
+pub let create_tag_with_body_comments_sql : String = "INSERT INTO tags (name, slug) VALUES (?, ?)"
+
+pub let delete_tag_after_body_comments_sql : String = "DELETE FROM tags WHERE slug = ?"
 
 pub let list_comments_for_post_sql : String = "\nSELECT id, post_id, author_name, author_email, content, is_approved, created_at FROM comments\nWHERE post_id = ? AND is_approved = 1\nORDER BY created_at ASC"
 

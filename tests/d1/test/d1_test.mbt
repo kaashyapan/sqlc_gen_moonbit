@@ -198,6 +198,30 @@ async test "D1: sqlc.arg in ON CONFLICT update" {
 }
 
 ///|
+async test "D1: body comments do not corrupt following SQL constants" {
+  let mf = @cloudflare.Miniflare::new({
+    ..@cloudflare.MiniflareOptions::default(),
+    d1Databases: Some(["TEST_DB"]),
+  })
+  mf.ready()
+  let db = mf.get_d1_database("TEST_DB")
+  let _ = db.exec(get_schema_sql())
+  @gen.create_tag_with_body_comments(
+    db,
+    @gen.CreateTagWithBodyCommentsParams::new("Commented", "commented"),
+  )
+  let before = @gen.list_tags(db)
+  assert_eq(before.length(), 1)
+  @gen.delete_tag_after_body_comments(
+    db,
+    @gen.DeleteTagAfterBodyCommentsParams::new("commented"),
+  )
+  let after = @gen.list_tags(db)
+  assert_eq(after.length(), 0)
+  mf.dispose()
+}
+
+///|
 async test "D1: post tags relationship" {
   let mf = @cloudflare.Miniflare::new({
     ..@cloudflare.MiniflareOptions::default(),

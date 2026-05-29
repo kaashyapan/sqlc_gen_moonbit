@@ -21,10 +21,6 @@ extern "wasm" fn wasi_fd_write(
 // Memory intrinsics - using inline WAT to avoid moonbit.* imports
 
 ///|
-extern "wasm" fn wasm_memory_size() -> Int =
-  #|(func (result i32) (memory.size))
-
-///|
 extern "wasm" fn wasm_memory_grow(pages : Int) -> Int =
   #|(func (param i32) (result i32) (memory.grow (local.get 0)))
 
@@ -44,24 +40,23 @@ extern "wasm" fn store8(ptr : Int, value : Int) =
 extern "wasm" fn load8_u(ptr : Int) -> Int =
   #|(func (param i32) (result i32) (i32.load8_u (local.get 0)))
 
-// Global heap pointer using Ref
-// Start at 16MB to avoid collision with MoonBit runtime
-
-///|
-let heap_ptr : Ref[Int] = Ref::new(16 * 1024 * 1024)
+// Scratch allocator for WASI iovec/buffer memory.
+//
+// Do not use a fixed address here: generated plugin responses can be large
+// enough for MoonBit's runtime heap to overlap an arbitrary scratch region.
+// If stdout copies response bytes into an overlapping buffer, the source
+// bytes can be clobbered mid-copy and surface as sporadic one-byte flips in
+// generated `.mbt` files. Allocate each scratch buffer in freshly-grown
+// pages so it cannot overlap existing MoonBit runtime allocations.
 
 ///|
 fn alloc(size : Int) -> Int {
-  let ptr = heap_ptr.val
-  // Align to 8 bytes
-  heap_ptr.val = ptr + ((size + 7) & -8)
-  // Grow memory if needed
-  let pages_needed = (heap_ptr.val + 65535) / 65536
-  let current_pages = wasm_memory_size()
-  if pages_needed > current_pages {
-    let _ = wasm_memory_grow(pages_needed - current_pages)
+  let pages_to_grow = (size + 65535) / 65536
+  let old_pages = wasm_memory_grow(pages_to_grow)
+  if old_pages < 0 {
+    abort("failed to grow wasm memory for WASI scratch buffer")
   }
-  ptr
+  old_pages * 65536
 }
 
 ///|

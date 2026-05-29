@@ -86,6 +86,14 @@ INSERT INTO tags (name, slug) VALUES (?, ?)
 ON CONFLICT (slug) DO UPDATE SET
   name = CASE WHEN sqlc.arg('new_name') <> '' THEN sqlc.arg('new_name') ELSE name END;
 
+-- name: CreateTagWithBodyComments :exec
+-- issue #15: comments between the sqlc name header and SQL body
+-- must not corrupt this query or the following SQL constant
+INSERT INTO tags (name, slug) VALUES (?, ?);
+
+-- name: DeleteTagAfterBodyComments :exec
+DELETE FROM tags WHERE slug = ?;
+
 -- ============================================
 -- Comment Queries
 -- ============================================
