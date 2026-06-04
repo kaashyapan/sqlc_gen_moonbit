@@ -120,11 +120,16 @@ fn generate_moon_pkg(options : Options) -> String {
     }
     Postgres => {
       buf.write_string("  \"moonbit-community/postgres/client\" @pgclient,\n")
-      buf.write_string(
-        "  \"mizchi/sqlc_gen_moonbit/lib/postgres\" @pghelpers,\n",
-      )
+      buf.write_string("  \"kaashyapan/postgresx\" @pghelpers,\n")
+      buf.write_string("  \"moonbitlang/x/decimal\",\n")
       buf.write_string("  \"moonbitlang/x/uuid\",\n")
       buf.write_string("  \"moonbitlang/x/time\",\n")
+      buf.write_string("  \"moonbitlang/core/buffer\",\n")
+      buf.write_string("  \"moonbitlang/core/double\",\n")
+      buf.write_string("  \"moonbitlang/core/float\",\n")
+      buf.write_string("  \"moonbitlang/core/json\",\n")
+      buf.write_string("  \"moonbitlang/core/ref\",\n")
+      buf.write_string("  \"moonbitlang/core/string\",\n")
     }
     PostgresJs => {
       buf.write_string("  \"mizchi/js/core\",\n")
@@ -139,6 +144,11 @@ fn generate_moon_pkg(options : Options) -> String {
     D1 | SqliteJs | PostgresJs | MysqlJs =>
       buf.write_string("supported_targets = \"js\"\n\n")
     Sqlite | Postgres => buf.write_string("supported_targets = \"native\"\n\n")
+  }
+
+  match options.backend {
+    Postgres => buf.write_string("warnings = \"-20-27\"\n\n")
+    _ => buf.write_string("")
   }
 
   // Options block

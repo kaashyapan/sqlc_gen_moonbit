@@ -114,7 +114,7 @@ Add dependencies to `moon.mod.json`:
 {
   "deps": {
     "mizchi/sqlite": "0.1.3",
-    "moonbitlang/x": "0.4.38"
+    "moonbitlang/x": "0.4.40"
   }
 }
 ```
@@ -179,7 +179,7 @@ Add dependencies to `moon.mod.json`:
   "deps": {
     "mizchi/npm_typed": "0.1.2",
     "mizchi/js": "0.10.10",
-    "moonbitlang/x": "0.4.38"
+    "moonbitlang/x": "0.4.40"
   }
 }
 ```

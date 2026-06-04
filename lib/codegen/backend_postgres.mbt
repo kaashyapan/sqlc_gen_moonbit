@@ -1,6 +1,7 @@
 // PostgreSQL backend (native target)
 
 ///|
+/// Generate sqlc_queries.mbt
 pub fn generate_queries_postgres(
   request : @plugin.GenerateRequest,
   overrides : Array[TypeOverride],
@@ -18,6 +19,7 @@ pub fn generate_queries_postgres(
 }
 
 ///|
+/// Generate async functions that can be consumed directly from application code
 fn generate_query_function_postgres(
   buf : StringBuilder,
   query : @plugin.Query,
@@ -27,7 +29,7 @@ fn generate_query_function_postgres(
   let sql_const = (to_snake_case(query.name) + "_sql").to_upper()
   let row_type = to_pascal_case(query.name) + "Row"
 
-  // Return type 
+  // Return type
   let return_type = match query.cmd {
     ":one" => row_type
     ":many" => "Array[" + row_type + "]"
@@ -70,7 +72,7 @@ fn generate_query_function_postgres(
     }
     buf.write_string("  ]\n")
   }
-  //buf.write_string(query.to_repr().to_string())
+
   buf.write_string("\n")
   // Execute based on command type
   match query.cmd {
@@ -124,6 +126,7 @@ fn generate_query_function_postgres(
 }
 
 ///|
+/// Each query / query function that returns data will have a reader
 fn write_reader(
   buf : StringBuilder,
   query : @plugin.Query,
@@ -158,6 +161,7 @@ fn write_reader(
 }
 
 ///|
+/// A reader consists of readers that convert from postgres wire format to moonbit type. Each field will impl the FromSql trait
 fn write_reader_for_type(
   buf : StringBuilder,
   col_name : String,
@@ -276,7 +280,7 @@ fn write_reader_for_type(
             "  let _\{col_name} : @pghelpers.PgInterval = row.get_name(\"\{col_name}\") //  \{pg_type}\n",
           )
           buf.write_string(
-            "  let \{col_name} : \{moonbit_type} = _\{col_name} |> @pghelpers.PgTime::to_period_duration //  \{pg_type}\n",
+            "  let \{col_name} : \{moonbit_type} = _\{col_name} |> @pghelpers.PgInterval::to_period_duration //  \{pg_type}\n",
           )
         }
       }
@@ -299,6 +303,25 @@ fn write_reader_for_type(
           )
         }
       }
+    "@decimal.Decimal" =>
+      match is_nullable {
+        true => {
+          buf.write_string(
+            "  let _\{col_name} : @pghelpers.PgDecimal? = row.get_name(\"\{col_name}\") //  nullable \{pg_type}\n",
+          )
+          buf.write_string(
+            "  let \{col_name} : \{moonbit_type}? = _\{col_name}.map(@pghelpers.PgDecimal::to_decimal) //  nullable \{pg_type}\n",
+          )
+        }
+        false => {
+          buf.write_string(
+            "  let _\{col_name} : @pghelpers.PgDecimal = row.get_name(\"\{col_name}\") //  \{pg_type}\n",
+          )
+          buf.write_string(
+            "  let \{col_name} : \{moonbit_type} = _\{col_name} |> @pghelpers.PgDecimal::to_decimal //  \{pg_type}\n",
+          )
+        }
+      }
     _ =>
       match is_nullable {
         true => {
@@ -318,6 +341,7 @@ fn write_reader_for_type(
 }
 
 ///|
+/// Params are encoded into postgres format using the ToSql trait
 fn write_param_for_type(
   buf : StringBuilder,
   param_name : String,
@@ -396,6 +420,16 @@ fn write_param_for_type(
           "       @pghelpers.PgTimeTz::of_timetz(\{param_name}) as &@pgclient.ToSql, //  \{moonbit_type} -> \{pg_type}\n",
         )
       }
+    "@decimal.Decimal" =>
+      if is_nullable {
+        buf.write_string(
+          "       \{param_name}.map(@pghelpers.PgDecimal::of_decimal) as &@pgclient.ToSql, //  \{moonbit_type} -> nullable \{pg_type}\n",
+        )
+      } else {
+        buf.write_string(
+          "       @pghelpers.PgDecimal::of_decimal(\{param_name}) as &@pgclient.ToSql, //  \{moonbit_type} -> \{pg_type}\n",
+        )
+      }
     _ =>
       if is_nullable {
         buf.write_string(
@@ -410,7 +444,7 @@ fn write_param_for_type(
 }
 
 ///|
-/// Every target should have a custom mapping so that the end user api is smooth. Dont impose Sqlite int64 on everyone
+/// Every target engine should have a custom mapping so that the end user api is smooth. Dont impose Sqlite int64 on everyone
 fn param_type_to_moonbit(
   col : @plugin.Column,
   overrides : Array[TypeOverride],
@@ -436,16 +470,17 @@ fn param_type_to_moonbit(
         // Integer types - SQLite INTEGER is 64bit, so use Int64 for consistency
         "INTEGER" => "Int"
         "INT" => "Int"
-        "INT4" => "Int16"
-        "INT8" => "Int16"
-        "BIGINT" => "BigInt"
-        "SMALLSERIAL" => "Int16"
+        "INT4" => "Int"
+        "INT8" => "Int64"
+        "BIGINT" => "Int64"
+        "SMALLSERIAL" => "Int"
         "SERIAL" => "Int"
         "BIGSERIAL" => "Int64"
-        "INT2" | "SMALLINT" => "Int16"
+        "INT2" | "SMALLINT" => "Int"
         // Floating point types
-        "REAL" | "FLOAT4" | "FLOAT8" | "FLOAT" => "Float"
-        "DOUBLE PRECISION" | "NUMERIC" | "DECIMAL" => "Double"
+        "REAL" | "FLOAT4" => "Float"
+        "DOUBLE PRECISION" | "FLOAT8" | "FLOAT" => "Double"
+        "NUMERIC" | "DECIMAL" => "@decimal.Decimal"
         // String types
         "TEXT"
         | "VARCHAR"
@@ -453,9 +488,10 @@ fn param_type_to_moonbit(
         | "CHARACTER"
         | "CHARACTER VARYING"
         | "BPCHAR"
+        | "CITEXT"
         | "CLOB" => "String"
         // Binary types
-        "BLOB" | "BYTEA" => "String"
+        "BLOB" | "BYTEA" => "Bytes"
         // Boolean types
         "BOOLEAN" | "BOOL" => "Bool"
         // Date/Time types (represented as String)
@@ -471,7 +507,7 @@ fn param_type_to_moonbit(
         "INTERVAL" => "@pghelpers.Interval"
         "UUID" => "@uuid.UUID"
         // JSON types (represented as String)
-        "JSONB" | "JSON" => "String"
+        "JSONB" | "JSON" => "Json"
         // Network types (represented as String)
         "INET" | "CIDR" | "MACADDR" | "MACADDR8" => "String"
         // Geometric types (represented as String)
@@ -484,7 +520,7 @@ fn param_type_to_moonbit(
         | "TSRANGE"
         | "TSTZRANGE"
         | "DATERANGE" => "String"
-        _ => "String" // Default to String for unknown types
+        _ => type_name.to_owned() // Default to String for unknown types - Should not default to string.
       }
       let base_type = if col.not_null {
         if col.is_array {
@@ -503,6 +539,7 @@ fn param_type_to_moonbit(
 }
 
 ///|
+/// Generate a struct to hold each query result
 pub fn generate_postgres_result_struct(
   buf : StringBuilder,
   struct_name : String,
@@ -522,6 +559,6 @@ pub fn generate_postgres_result_struct(
     let _typ = if is_nullable { "nullable \{pg_type}" } else { pg_type }
     buf.write_string("  // \{_typ}\n")
   }
-  buf.write_string("}")
+  buf.write_string("} derive(Show)")
   buf.write_string("\n\n")
 }

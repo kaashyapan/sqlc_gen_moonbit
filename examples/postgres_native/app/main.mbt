@@ -1,7 +1,6 @@
 ///|
 async fn create_user(client : @client.Client) -> Int {
   let name = "Elon Musk"
-  let email = "elon@tesla.com"
   let uuid_var = @uuid.from_hex("019e092f-c489-7475-bbec-b615291e14b7") |> Some
   let timestampz_var = @time.ZonedDateTime::of(
       2017,
@@ -15,31 +14,68 @@ async fn create_user(client : @client.Client) -> Int {
     )
     |> Some
   let timestamp_var = @time.PlainDateTime::of(
-    2017,
-    11,
-    8,
-    hour=16,
-    minute=20,
-    second=14,
+      2017,
+      11,
+      8,
+      hour=16,
+      minute=20,
+      second=14,
+    )
+    |> Some
+  let date_var = @time.PlainDate::of(2020, 5, 6) |> Some
+  let time_var = @time.PlainTime::of(20, 15, 6, 0) |> Some
+  let interval_var = @pghelpers.Interval::of(
+      @time.Period::of(months=3, days=20),
+      @time.Duration::of(hours=5, minutes=20, seconds=0),
+    )
+    |> Some
+  let timetz_var = @pghelpers.TimeTz::of(
+      @time.PlainTime::of(20, 15, 6, 0),
+      @time.ZoneOffset::of(hours=5, minutes=30),
+    )
+    |> Some
+  let bool_var = Some(true)
+  let int_var = Some(16)
+  let int2_var = Some(16)
+  let smallint_var = Some(16)
+  let pg_int8_var = Some(Int64::from_int(64))
+  let int64_var = Some(Int64::from_int(64))
+  let bigserial_var = Some(Int64::from_int(6400))
+  let json_var = "{\"name\": \"Elon Musk\"}".to_json() |> Some
+  let jsonb_var = "{\"name\": \"Jeff Bezos\"}".to_json() |> Some
+  let bytes_var = b"\x00\x00\x00\x02" |> Some
+  let float_var = Float::from_int(3) |> Some
+  let double_var = Double::from_int(3) |> Some
+  let numeric_var = @decimal.Decimal::from_string("123.45")
+  @sql.create_user(
+    client,
+    name~,
+    date_var~,
+    time_var~,
+    timestamp_var~,
+    timestampz_var~,
+    uuid_var~,
+    bool_var~,
+    bigserial_var~,
+    int64_var~,
+    pg_int8_var~,
+    int_var~,
+    interval_var~,
+    timetz_var~,
+    smallint_var~,
+    int2_var~,
+    json_var~,
+    jsonb_var~,
+    bytes_var~,
+    float_var~,
+    double_var~,
+    numeric_var~,
   )
-  let date_var = @time.PlainDate::of(2020, 5, 6)
-  let time_var = @time.PlainTime::of(20, 15, 6, 0)
-  let interval_var = (
-    @time.Period::of(months=3, days=20),
-    @time.Duration::of(hours=5, minutes=20, seconds=0),
-  )
-  let timetz_var = (
-    @time.PlainTime::of(20, 15, 6, 0),
-    @time.ZoneOffset::of(hours=5, minutes=30),
-  )
-  println(date_var)
-  @sql.create_user(client, name~, email~, date_var~)
 }
 
 ///|
-async fn update_user(client : @client.Client, id : Int) -> Int {
-  let name = "Jeff Bezos"
-  let email = "elon@tesla.com"
+async fn create_user_nn(client : @client.Client) -> Int {
+  let name = "Elon Musk"
   let uuid_var = @uuid.from_hex("019e092f-c489-7475-bbec-b615291e14b7")
   let timestampz_var = @time.ZonedDateTime::of(
     2017,
@@ -48,6 +84,8 @@ async fn update_user(client : @client.Client, id : Int) -> Int {
     hour=16,
     minute=20,
     second=14,
+    nanosecond=0,
+    zone=@time.utc_zone,
   )
   let timestamp_var = @time.PlainDateTime::of(
     2017,
@@ -59,15 +97,55 @@ async fn update_user(client : @client.Client, id : Int) -> Int {
   )
   let date_var = @time.PlainDate::of(2020, 5, 6)
   let time_var = @time.PlainTime::of(20, 15, 6, 0)
-  let interval_var = (
+  let interval_var = @pghelpers.Interval::of(
     @time.Period::of(months=3, days=20),
     @time.Duration::of(hours=5, minutes=20, seconds=0),
   )
-  let timetz_var = (
+  let timetz_var = @pghelpers.TimeTz::of(
     @time.PlainTime::of(20, 15, 6, 0),
     @time.ZoneOffset::of(hours=5, minutes=30),
   )
-  @sql.update_user(client, name~, email~, id~, date_var~)
+  let bool_var = true
+  let int_var = 16
+  let int2_var = 16
+  let smallint_var = 16
+  let pg_int8_var = Int64::from_int(64)
+  let int64_var = Int64::from_int(64)
+  let bigserial_var = Int64::from_int(6400)
+  let json_var = "{\"name\": \"Elon Musk\"}".to_json()
+  let jsonb_var = "{\"name\": \"Jeff Bezos\"}".to_json()
+  let bytes_var = b"\x00\x00\x00\x02"
+  let float_var = Float::from_int(3)
+  let double_var = Double::from_int(3)
+  let numeric_var = match @decimal.Decimal::from_string("123.45") {
+    Some(decimal) => decimal
+    None => fail("Invalid decimal")
+  }
+
+  @sql.create_user_nn(
+    client,
+    name~,
+    date_var~,
+    time_var~,
+    timestamp_var~,
+    timestampz_var~,
+    uuid_var~,
+    bool_var~,
+    bigserial_var~,
+    int64_var~,
+    pg_int8_var~,
+    int_var~,
+    interval_var~,
+    timetz_var~,
+    smallint_var~,
+    int2_var~,
+    json_var~,
+    jsonb_var~,
+    bytes_var~,
+    float_var~,
+    double_var~,
+    numeric_var~,
+  )
 }
 
 ///|
@@ -76,10 +154,10 @@ async fn main {
   println("Generated types and queries are in db/gen/")
 
   let config = @client.Config::new(
-    "postgres",
-    user="xxxxx",
-    database="xxxxx",
-    password="xxxxxx",
+    "localhost",
+    user="postgres",
+    database="testdb",
+    password="postgres",
     port=5432,
     ssl_mode=@client.SslMode::Disable,
     application_name="my-service",
@@ -96,22 +174,81 @@ async fn main {
     println("Current_user : " + current_user)
 
     let serial = create_user(client)
-    println("Inserted \{serial} serial")
-
-    let rows = update_user(client, 1) catch {
-      err => {
-        println(err)
-        0
-      }
+    if serial > 0 {
+      println("Inserted \{serial} serial")
+    } else {
+      panic()
     }
-    println("Updated \{rows} rows")
 
-    let row = @sql.get_user(client, id=1)
-    println(
-      "Select row \{row.id} - \{row.name} - \{row.email} - \{row.created_at} - \{row.date_var}",
-    )
+    let row = @sql.get_user(client, id=serial)
+    if row.id == serial {
+      println("Select by ID - \{row.to_string()}")
+    } else {
+      panic()
+    }
 
     let rows = @sql.get_by_date(
+      client,
+      date_var=@time.PlainDate::of(2020, 5, 6) |> Some,
+    ) catch {
+      err => {
+        println("Get by Date failed - " + err.to_string())
+        []
+      }
+    }
+    if rows.length() > 0 {
+      println("Select by date - Found \{rows.length()} rows")
+    } else {
+      panic()
+    }
+
+    let rows = @sql.get_by_uuid(
+      client,
+      uuid_var=Some(@uuid.from_hex("019e092f-c489-7475-bbec-b615291e14b7")),
+    ) catch {
+      err => {
+        println("Get by UUID failed - " + err.to_string())
+        []
+      }
+    }
+    if rows.length() > 0 {
+      println("Select by UUID: Found \{rows.length()} rows")
+    } else {
+      panic()
+    }
+    let rows = @sql.list_users(client)
+    if rows.length() > 0 {
+      println("Found \{rows.length()} rows")
+      for row in rows {
+        println("Select row \{row.to_string()}")
+      }
+    } else {
+      panic()
+    }
+    let rows = @sql.delete_user(client, id=serial)
+    if rows > 0 {
+      println("Deleted \{rows} rows")
+    } else {
+      panic()
+    }
+
+    println(
+      "\n" + String::from_array(['-'].repeat(60)) + " Not Null queries \n",
+    )
+
+    let serial = create_user_nn(client)
+    if serial > 0 {
+      println("Inserted \{serial} serial")
+    } else {
+      panic()
+    }
+    let row = @sql.get_user_nn(client, id=serial)
+    if row.id == serial {
+      println("Select by ID - \{row.to_string()}")
+    } else {
+      panic()
+    }
+    let rows = @sql.get_by_date_nn(
       client,
       date_var=@time.PlainDate::of(2020, 5, 6),
     ) catch {
@@ -120,32 +257,46 @@ async fn main {
         []
       }
     }
-    for row in rows {
-      println(
-        "Select by date row \{row.id} - \{row.name} - \{row.email} - \{row.created_at} - \{row.date_var}",
-      )
+    if rows.length() > 0 {
+      for row in rows {
+        println("Select by date: \{row.to_string()}")
+      }
+    } else {
+      panic()
     }
 
-    let rows = @sql.get_by_uuid(
+    let rows = @sql.get_by_uuid_nn(
       client,
-      uuid_var=Some(@uuid.from_hex("019dc341-9b48-77e4-806a-7a303d5395f5")),
+      uuid_var=@uuid.from_hex("019e092f-c489-7475-bbec-b615291e14b7"),
     ) catch {
       err => {
         println("Get by UUID failed - " + err.to_string())
         []
       }
     }
-    for row in rows {
-      println(
-        "Select by uuid row \{row.id} - \{row.name} - \{row.email} - \{row.created_at} - \{row.date_var}",
-      )
+    if rows.length() > 0 {
+      for row in rows {
+        println("Select by UUID: \{row.to_string()}")
+      }
+    } else {
+      panic()
     }
-    //let rows = @sql.delete_user(client, id=10)
-    //println("Deleted \{rows} rows")
+    let rows = @sql.list_users_nn(client)
+    if rows.length() > 0 {
+      println("Found \{rows.length()} rows")
+      for row in rows {
+        println("Select row \{row.to_string()}")
+      }
+    } else {
+      panic()
+    }
 
-    let rows = @sql.list_users(client)
-    println("Total \{rows.length()} rows")
-
+    let rows = @sql.delete_user_nn(client, id=serial)
+    if rows > 0 {
+      println("Deleted \{rows} rows")
+    } else {
+      panic()
+    }
     client.close()
   })
 }

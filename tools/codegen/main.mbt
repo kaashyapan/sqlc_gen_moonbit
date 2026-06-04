@@ -383,7 +383,7 @@ fn parse_queries(content : String) -> Array[QueryDef] {
   let lines = split_lines(content)
   let mut i = 0
   while i < lines.length() {
-    let line = lines[i].trim().to_string()
+    let line = lines[i].trim().to_owned()
     if line.has_prefix("-- @query ") {
       let parts = split_whitespace(substr(line, 10))
       if parts.length() >= 2 {
@@ -394,7 +394,7 @@ fn parse_queries(content : String) -> Array[QueryDef] {
         let sql_lines : Array[String] = []
         i = i + 1
         while i < lines.length() {
-          let next_line = lines[i].trim().to_string()
+          let next_line = lines[i].trim().to_owned()
           if next_line.has_prefix("-- @param ") {
             let param_str = substr(next_line, 10)
             let param_parts = split_whitespace(param_str)
@@ -405,7 +405,7 @@ fn parse_queries(content : String) -> Array[QueryDef] {
             let ret_str = substr(next_line, 12)
             let cols = split_by_comma(ret_str)
             for col in cols {
-              let col_parts = split_whitespace(col.trim().to_string())
+              let col_parts = split_whitespace(col.trim().to_owned())
               if col_parts.length() >= 2 {
                 returns.push((col_parts[0], col_parts[1]))
               }

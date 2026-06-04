@@ -57,7 +57,7 @@ moon new .
   "version": "0.0.1",
   "deps": {
     "moonbit-community/postgres": "0.0.6",
-    "moonbitlang/x": "0.4.38"
+    "moonbitlang/x": "0.4.40"
   },
   "supported-targets": ["native"]
 }

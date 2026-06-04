@@ -1,15 +1,18 @@
 import {
-  "example_postgres_native/db/gen",
-  "moonbit-community/postgres",
+  "moonbit-community/postgres/client",
+  "moonbitlang/async",
+  "moonbitlang/core/debug",
+  "example_postgres_native/db/gen" @sql,
+  "moonbitlang/x/uuid",
+  "moonbitlang/x/time",
+  "moonbitlang/x/decimal",
+  "kaashyapan/postgresx" @pghelpers,
 }
 
 supported_targets = "native"
 
+warnings = "-20-27"
+
 options(
   "is-main": true,
-  link: {
-    "native": {
-      "cc-link-flags": "-lpq",
-    },
-  },
 )

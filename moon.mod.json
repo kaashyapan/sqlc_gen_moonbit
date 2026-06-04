@@ -3,10 +3,9 @@
   "version": "0.3.2",
   "deps": {
     "moonbitlang/protobuf": "0.1.1",
-    "moonbitlang/x": "0.4.40",
+    "moonbitlang/x": "0.4.41",
     "mizchi/sqlite": "0.2.3",
     "BigOrangeQWQ/wasi-io": "0.2.6",
-    "moonbit-community/postgres": "0.0.6",
     "mizchi/codegen": "0.2.3"
   },
   "readme": "README.mbt.md",

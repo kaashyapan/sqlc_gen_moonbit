@@ -1,7 +1,0 @@
-{
-  "name": "backend_postgres_native_test",
-  "version": "0.1.0",
-  "deps": {
-    "moonbit-community/postgres": "0.0.6"
-  }
-}
