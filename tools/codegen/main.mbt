@@ -353,7 +353,7 @@ fn get_required_deps(backend : String) -> Array[String] {
     "sqlite" => ["mizchi/sqlite", "moonbitlang/x"]
     "sqlite_js" => ["mizchi/sqlite", "moonbitlang/x"]
     "d1" => ["mizchi/cloudflare", "mizchi/js"]
-    "postgres" => ["mattn/postgres"]
+    "postgres" => ["moonbit-community/postgres"]
     "postgres_js" => ["mizchi/npm_typed", "mizchi/js"]
     "mysql_js" => ["mizchi/js"]
     _ => []
@@ -497,7 +497,9 @@ fn generate_helpers(buf : StringBuilder, backend : String) -> Unit {
         "// Required: import { \"mizchi/cloudflare\", \"mizchi/js/core\" }\n\n",
       )
     "postgres" =>
-      buf.write_string("// Required: import { \"mattn/postgres\" }\n\n")
+      buf.write_string(
+        "// Required: import { \"moonbit-community/postgres\" }\n\n",
+      )
     "postgres_js" =>
       buf.write_string(
         "// Required: import { \"mizchi/npm_typed/pg\", \"mizchi/js/core\" }\n\n",

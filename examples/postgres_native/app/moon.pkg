@@ -1,6 +1,6 @@
 import {
   "example_postgres_native/db/gen",
-  "mattn/postgres",
+  "moonbit-community/postgres",
 }
 
 supported_targets = "native"

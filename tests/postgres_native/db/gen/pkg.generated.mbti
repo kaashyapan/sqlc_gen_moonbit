@@ -2,7 +2,7 @@
 package "backend_postgres_native_test/db/gen"
 
 import(
-  "mattn/postgres"
+  "moonbit-community/postgres"
 )
 
 // Values
@@ -721,4 +721,3 @@ pub impl Show for UpdateUserNameParams
 // Type aliases
 
 // Traits
-

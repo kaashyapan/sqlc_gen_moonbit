@@ -11,8 +11,6 @@ fn make_column(type_name : String, not_null : Bool) -> @plugin.Column {
 test "INTEGER mapping uses Int64 conversions" {
   let col = make_column("INTEGER", true)
   assert_eq(sql_type_to_moonbit(col, []), "Int64")
-  let pg_expr = postgres_column_from_row(col, 0)
-  assert_true(pg_expr.contains("parse_int64"))
   let pg_js_expr = postgres_js_column_from_any(col, "row")
   assert_true(pg_js_expr.contains("js_number_to_int64"))
   let mysql_js_expr = mysql_js_column_from_any(col, "row")

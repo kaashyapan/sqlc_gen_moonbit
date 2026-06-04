@@ -13,7 +13,7 @@
 | `sqlite` | `native` | Native binary | `mizchi/sqlite` |
 | `sqlite_js` | `js` | Node.js / Browser | `mizchi/sqlite`, `mizchi/js` |
 | `d1` | `js` | Cloudflare Workers | `mizchi/cloudflare`, `mizchi/js` |
-| `postgres` | `native` | Native binary | `mattn/postgres` |
+| `postgres` | `native` | Native binary | `moonbit-community/postgres` |
 | `postgres_js` | `js` | Node.js | `mizchi/npm_typed/pg`, `mizchi/js` |
 | `mysql_js` | `js` | Node.js | `mizchi/js` (mysql2 npm package) |
 

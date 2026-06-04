@@ -24,7 +24,7 @@ impl BackendCodeGen for PostgresBackend with info(_self) {
 
 ///|
 impl BackendCodeGen for PostgresBackend with generate_helpers(_self, buf) {
-  buf.write_string("// Requires: mattn/postgres\n\n")
+  buf.write_string("// Requires: moonbit-community/postgres\n\n")
 }
 
 ///|
@@ -95,7 +95,7 @@ impl BackendCodeGen for PostgresBackend with column_read_expr(
   let idx_str = idx.to_string()
   let is_nullable = !col.not_null
 
-  // mattn/postgres returns Array[Array[String]], so we access row[idx]
+  // moonbit-community/postgres returns Array[Array[String]], so we access row[idx]
   let conversion = match type_name {
     "INTEGER" | "INT" | "INT4" =>
       "(try { @strconv.parse_int64(row[" + idx_str + "]) } catch { _ => 0L })"

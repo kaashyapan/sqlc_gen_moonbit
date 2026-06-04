@@ -2,6 +2,6 @@
   "name": "backend_postgres_native_test",
   "version": "0.1.0",
   "deps": {
-    "mattn/postgres": "0.10.4"
+    "moonbit-community/postgres": "0.0.6"
   }
 }
