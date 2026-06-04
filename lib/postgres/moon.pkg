@@ -1,0 +1,6 @@
+import {
+  "moonbitlang/x/uuid",
+  "moonbitlang/x/time",
+  "moonbit-community/postgres/client" @pgclient,
+  "moonbit-community/postgres/protocol" @proto,
+}

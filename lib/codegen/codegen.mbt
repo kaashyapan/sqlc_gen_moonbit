@@ -118,7 +118,14 @@ fn generate_moon_pkg(options : Options) -> String {
       buf.write_string("  \"mizchi/js/core\",\n")
       buf.write_string("  \"mizchi/cloudflare\",\n")
     }
-    Postgres => buf.write_string("  \"mattn/postgres\",\n")
+    Postgres => {
+      buf.write_string("  \"moonbit-community/postgres/client\" @pgclient,\n")
+      buf.write_string(
+        "  \"mizchi/sqlc_gen_moonbit/lib/postgres\" @pghelpers,\n",
+      )
+      buf.write_string("  \"moonbitlang/x/uuid\",\n")
+      buf.write_string("  \"moonbitlang/x/time\",\n")
+    }
     PostgresJs => {
       buf.write_string("  \"mizchi/js/core\",\n")
       buf.write_string("  \"mizchi/npm_typed/pg\",\n")
@@ -181,40 +188,72 @@ fn generate_types(
       let struct_name = to_pascal_case(query.name) + "Row"
       if !generated_structs.contains(struct_name) && query.columns.length() > 0 {
         generated_structs[struct_name] = true
-        generate_result_struct(
-          buf,
-          struct_name,
-          query.columns,
-          options.overrides,
-          query,
-        )
+        match options.backend {
+          Postgres =>
+            generate_postgres_result_struct(
+              buf,
+              struct_name,
+              query.columns,
+              options.overrides,
+              query,
+            )
+          _ =>
+            generate_result_struct(
+              buf,
+              struct_name,
+              query.columns,
+              options.overrides,
+              query,
+            )
+        }
       }
     }
   }
 
-  // Generate parameter structs for queries with parameters
-  for query in request.queries {
-    if query.params.length() > 0 {
-      let struct_name = to_pascal_case(query.name) + "Params"
-      generate_params_struct(
-        buf,
-        struct_name,
-        query.params,
-        options.overrides,
-        query,
-      )
-    }
+  // API experiment - For postgres native only
+  // Pass parameters as labelled parameters directly to the function. This makes it easy to skip null/optional columns
+  // Dont generate datastructures for params.
+  match options.backend {
+    Postgres => ()
+    _ =>
+      // Generate parameter structs for queries with parameters
+      for query in request.queries {
+        if query.params.length() > 0 {
+          let struct_name = to_pascal_case(query.name) + "Params"
+          generate_params_struct(
+            buf,
+            struct_name,
+            query.params,
+            options.overrides,
+            query,
+          )
+        }
+      }
   }
 
-  // Generate SQL constants
+  // API experiment - For postgres native only
+  // Constant literals may have compiler optimisations. Use const instead of let.
   buf.write_string("// SQL queries\n")
-  for query in request.queries {
-    let const_name = to_snake_case(query.name) + "_sql"
-    buf.write_string("pub let ")
-    buf.write_string(const_name)
-    buf.write_string(" : String = ")
-    buf.write_string(escape_string(query.text))
-    buf.write_string("\n\n")
+  match options.backend {
+    Postgres =>
+      for query in request.queries {
+        let const_name = to_snake_case(query.name) + "_sql"
+        buf.write_string("const ")
+        buf.write_string(const_name.to_upper())
+        buf.write_string(" : String = ")
+        buf.write_string(escape_string(query.text))
+        buf.write_string("\n\n")
+      }
+    _ =>
+      for query in request.queries {
+        let const_name = to_snake_case(query.name) + "_sql"
+        buf.write_string("pub let ")
+        buf.write_string(const_name)
+        buf.write_string(" : String = ")
+        buf.write_string(escape_string(query.text))
+        buf.write_string("\n\n")
+      }
   }
+
   buf.to_string()
 }

@@ -1,15 +1,15 @@
 version: "2"
 plugins:
-  - name: moonbit
-    wasm:
-      url: "file://../../bin/sqlc-gen-moonbit.wasm"
-      sha256: ""
+    - name: moonbit
+      wasm:
+          url: "file://../../_build/wasm/release/build/cmd/wasm/wasm.wasm"
+          sha256: ""
 sql:
-  - engine: postgresql
-    schema: "db/postgres/schema.sql"
-    queries: "db/postgres/query.sql"
-    codegen:
-      - plugin: moonbit
-        out: "db/gen"
-        options:
-          backend: "postgres"
+    - engine: postgresql
+      schema: "db/postgres/schema.sql"
+      queries: "db/postgres/query.sql"
+      codegen:
+          - plugin: moonbit
+            out: "db/gen"
+            options:
+                backend: "postgres"

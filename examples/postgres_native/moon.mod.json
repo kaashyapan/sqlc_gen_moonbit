@@ -1,12 +1,14 @@
 {
-  "name": "example_postgres_native",
-  "version": "0.0.1",
-  "deps": {
-    "mattn/postgres": "0.10.4",
-    "moonbitlang/x": "0.4.38"
-  },
-  "supported-targets": [
-    "native"
-  ],
-  "preferred-target": "native"
+    "name": "example_postgres_native",
+    "version": "0.0.1",
+    "deps": {
+        "moonbitlang/x": "0.4.40",
+        "moonbit-community/postgres": "0.0.6",
+        "moonbitlang/async": "0.19.0",
+        "mizchi/sqlc_gen_moonbit": {
+            "path": "../../"
+        }
+    },
+    "supported-targets": ["native"],
+    "preferred-target": "native"
 }
