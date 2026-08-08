@@ -3,7 +3,7 @@ plugins:
   - name: moonbit
     wasm:
       url: "file://../../_build/wasm/release/build/cmd/wasm/wasm.wasm"
-      sha256: ""
+      sha256: "9d743fccbc5c2f19428712425235d4e53e1bee9f7843987639800394d722d2bd"
 sql:
   - engine: postgresql
     schema: "db/postgres/schema.sql"

@@ -2,9 +2,9 @@
   "name": "example_postgres_native",
   "version": "0.0.1",
   "deps": {
-    "moonbitlang/x": "0.4.42",
-    "moonbit-community/postgres": "0.0.6",
-    "moonbitlang/async": "0.19.0",
+    "moonbitlang/x": "0.4.41",
+    "moonbit-community/postgres": "0.0.7",
+    "moonbitlang/async": "0.20.3",
     "kaashyapan/postgresx": "0.1.0"
   },
   "supported-targets": ["native"],
