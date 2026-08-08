@@ -6,6 +6,4 @@ import {
   "mizchi/codegen/emit",
 }
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")

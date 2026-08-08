@@ -4,14 +4,14 @@ pub(all) struct Parameter {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for Parameter with size_of(self) {
+pub impl @protobuf.Sized for Parameter with fn size_of(self) {
   let mut size = 0U
   size += 1U + @protobuf.size_of(self.number)
   size
 }
 
 ///|
-pub impl Default for Parameter with default() -> Parameter {
+pub impl Default for Parameter with fn default() -> Parameter {
   Parameter::{ number: Int::default() }
 }
 
@@ -21,7 +21,7 @@ pub fn Parameter::new(number : Int) -> Parameter {
 }
 
 ///|
-pub impl @protobuf.Read for Parameter with read_with_limit(
+pub impl @protobuf.Read for Parameter with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> Parameter raise {
   let msg = Parameter::default()
@@ -40,7 +40,7 @@ pub impl @protobuf.Read for Parameter with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for Parameter with write(
+pub impl @protobuf.Write for Parameter with fn write(
   self : Parameter,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -49,7 +49,7 @@ pub impl @protobuf.Write for Parameter with write(
 }
 
 ///|
-pub impl ToJson for Parameter with to_json(self) {
+pub impl ToJson for Parameter with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.number != Default::default() {
     json["number"] = self.number.to_json()
@@ -58,7 +58,7 @@ pub impl ToJson for Parameter with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for Parameter with from_json(
+pub impl @json.FromJson for Parameter with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> Parameter raise {
@@ -76,7 +76,7 @@ pub impl @json.FromJson for Parameter with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for Parameter with read_with_limit(
+pub impl @protobuf.AsyncRead for Parameter with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> Parameter raise {
   let msg = Parameter::default()
@@ -95,7 +95,7 @@ pub impl @protobuf.AsyncRead for Parameter with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for Parameter with write(
+pub impl @protobuf.AsyncWrite for Parameter with fn write(
   self : Parameter,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -112,7 +112,7 @@ pub(all) struct Config {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for Config with size_of(self) {
+pub impl @protobuf.Sized for Config with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -136,7 +136,7 @@ pub impl @protobuf.Sized for Config with size_of(self) {
 }
 
 ///|
-pub impl Default for Config with default() -> Config {
+pub impl Default for Config with fn default() -> Config {
   Config::{
     version: String::default(),
     engine: String::default(),
@@ -156,7 +156,7 @@ pub fn Config::new(
 }
 
 ///|
-pub impl @protobuf.Read for Config with read_with_limit(
+pub impl @protobuf.Read for Config with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> Config raise {
   let msg = Config::default()
@@ -178,7 +178,7 @@ pub impl @protobuf.Read for Config with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for Config with write(
+pub impl @protobuf.Write for Config with fn write(
   self : Config,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -197,7 +197,7 @@ pub impl @protobuf.Write for Config with write(
 }
 
 ///|
-pub impl ToJson for Config with to_json(self) {
+pub impl ToJson for Config with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.version != Default::default() {
     json["version"] = self.version.to_json()
@@ -215,7 +215,7 @@ pub impl ToJson for Config with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for Config with from_json(
+pub impl @json.FromJson for Config with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> Config raise {
@@ -238,7 +238,7 @@ pub impl @json.FromJson for Config with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for Config with read_with_limit(
+pub impl @protobuf.AsyncRead for Config with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> Config raise {
   let msg = Config::default()
@@ -260,7 +260,7 @@ pub impl @protobuf.AsyncRead for Config with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for Config with write(
+pub impl @protobuf.AsyncWrite for Config with fn write(
   self : Config,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -287,7 +287,7 @@ pub(all) struct Query {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for Query with size_of(self) {
+pub impl @protobuf.Sized for Query with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -312,7 +312,7 @@ pub impl @protobuf.Sized for Query with size_of(self) {
 }
 
 ///|
-pub impl Default for Query with default() -> Query {
+pub impl Default for Query with fn default() -> Query {
   Query::{
     sql: String::default(),
     name: String::default(),
@@ -332,7 +332,7 @@ pub fn Query::new(
 }
 
 ///|
-pub impl @protobuf.Read for Query with read_with_limit(
+pub impl @protobuf.Read for Query with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> Query raise {
   let msg = Query::default()
@@ -355,7 +355,7 @@ pub impl @protobuf.Read for Query with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for Query with write(
+pub impl @protobuf.Write for Query with fn write(
   self : Query,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -373,7 +373,7 @@ pub impl @protobuf.Write for Query with write(
 }
 
 ///|
-pub impl ToJson for Query with to_json(self) {
+pub impl ToJson for Query with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.sql != Default::default() {
     json["sql"] = self.sql.to_json()
@@ -391,7 +391,7 @@ pub impl ToJson for Query with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for Query with from_json(
+pub impl @json.FromJson for Query with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> Query raise {
@@ -413,7 +413,7 @@ pub impl @json.FromJson for Query with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for Query with read_with_limit(
+pub impl @protobuf.AsyncRead for Query with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> Query raise {
   let msg = Query::default()
@@ -438,7 +438,7 @@ pub impl @protobuf.AsyncRead for Query with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for Query with write(
+pub impl @protobuf.AsyncWrite for Query with fn write(
   self : Query,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -461,7 +461,7 @@ pub(all) struct PostgreSQL {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for PostgreSQL with size_of(self) {
+pub impl @protobuf.Sized for PostgreSQL with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -472,7 +472,7 @@ pub impl @protobuf.Sized for PostgreSQL with size_of(self) {
 }
 
 ///|
-pub impl Default for PostgreSQL with default() -> PostgreSQL {
+pub impl Default for PostgreSQL with fn default() -> PostgreSQL {
   PostgreSQL::{ explain: PostgreSQLExplain::default() }
 }
 
@@ -482,7 +482,7 @@ pub fn PostgreSQL::new(explain : PostgreSQLExplain) -> PostgreSQL {
 }
 
 ///|
-pub impl @protobuf.Read for PostgreSQL with read_with_limit(
+pub impl @protobuf.Read for PostgreSQL with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> PostgreSQL raise {
   let msg = PostgreSQL::default()
@@ -502,7 +502,7 @@ pub impl @protobuf.Read for PostgreSQL with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for PostgreSQL with write(
+pub impl @protobuf.Write for PostgreSQL with fn write(
   self : PostgreSQL,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -512,7 +512,7 @@ pub impl @protobuf.Write for PostgreSQL with write(
 }
 
 ///|
-pub impl ToJson for PostgreSQL with to_json(self) {
+pub impl ToJson for PostgreSQL with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.explain != Default::default() {
     json["explain"] = self.explain.to_json()
@@ -521,7 +521,7 @@ pub impl ToJson for PostgreSQL with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for PostgreSQL with from_json(
+pub impl @json.FromJson for PostgreSQL with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> PostgreSQL raise {
@@ -539,7 +539,7 @@ pub impl @json.FromJson for PostgreSQL with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for PostgreSQL with read_with_limit(
+pub impl @protobuf.AsyncRead for PostgreSQL with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> PostgreSQL raise {
   let msg = PostgreSQL::default()
@@ -560,7 +560,7 @@ pub impl @protobuf.AsyncRead for PostgreSQL with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for PostgreSQL with write(
+pub impl @protobuf.AsyncWrite for PostgreSQL with fn write(
   self : PostgreSQL,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -576,7 +576,9 @@ pub(all) struct PostgreSQLExplain_SettingsEntry {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for PostgreSQLExplain_SettingsEntry with size_of(self) {
+pub impl @protobuf.Sized for PostgreSQLExplain_SettingsEntry with fn size_of(
+  self,
+) {
   let mut size = 0U
   size += 1U +
     ({
@@ -592,7 +594,7 @@ pub impl @protobuf.Sized for PostgreSQLExplain_SettingsEntry with size_of(self) 
 }
 
 ///|
-pub impl Default for PostgreSQLExplain_SettingsEntry with default() -> PostgreSQLExplain_SettingsEntry {
+pub impl Default for PostgreSQLExplain_SettingsEntry with fn default() -> PostgreSQLExplain_SettingsEntry {
   PostgreSQLExplain_SettingsEntry::{
     key: String::default(),
     value: String::default(),
@@ -608,7 +610,7 @@ pub fn PostgreSQLExplain_SettingsEntry::new(
 }
 
 ///|
-pub impl @protobuf.Read for PostgreSQLExplain_SettingsEntry with read_with_limit(
+pub impl @protobuf.Read for PostgreSQLExplain_SettingsEntry with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> PostgreSQLExplain_SettingsEntry raise {
   let msg = PostgreSQLExplain_SettingsEntry::default()
@@ -628,7 +630,7 @@ pub impl @protobuf.Read for PostgreSQLExplain_SettingsEntry with read_with_limit
 }
 
 ///|
-pub impl @protobuf.Write for PostgreSQLExplain_SettingsEntry with write(
+pub impl @protobuf.Write for PostgreSQLExplain_SettingsEntry with fn write(
   self : PostgreSQLExplain_SettingsEntry,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -639,7 +641,7 @@ pub impl @protobuf.Write for PostgreSQLExplain_SettingsEntry with write(
 }
 
 ///|
-pub impl ToJson for PostgreSQLExplain_SettingsEntry with to_json(self) {
+pub impl ToJson for PostgreSQLExplain_SettingsEntry with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.key != Default::default() {
     json["key"] = self.key.to_json()
@@ -651,7 +653,7 @@ pub impl ToJson for PostgreSQLExplain_SettingsEntry with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for PostgreSQLExplain_SettingsEntry with from_json(
+pub impl @json.FromJson for PostgreSQLExplain_SettingsEntry with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> PostgreSQLExplain_SettingsEntry raise {
@@ -672,7 +674,7 @@ pub impl @json.FromJson for PostgreSQLExplain_SettingsEntry with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for PostgreSQLExplain_SettingsEntry with read_with_limit(
+pub impl @protobuf.AsyncRead for PostgreSQLExplain_SettingsEntry with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> PostgreSQLExplain_SettingsEntry raise {
   let msg = PostgreSQLExplain_SettingsEntry::default()
@@ -692,7 +694,7 @@ pub impl @protobuf.AsyncRead for PostgreSQLExplain_SettingsEntry with read_with_
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for PostgreSQLExplain_SettingsEntry with write(
+pub impl @protobuf.AsyncWrite for PostgreSQLExplain_SettingsEntry with fn write(
   self : PostgreSQLExplain_SettingsEntry,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -737,7 +739,7 @@ pub(all) struct PostgreSQLExplain_Plan {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for PostgreSQLExplain_Plan with size_of(self) {
+pub impl @protobuf.Sized for PostgreSQLExplain_Plan with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -822,7 +824,7 @@ pub impl @protobuf.Sized for PostgreSQLExplain_Plan with size_of(self) {
 }
 
 ///|
-pub impl Default for PostgreSQLExplain_Plan with default() -> PostgreSQLExplain_Plan {
+pub impl Default for PostgreSQLExplain_Plan with fn default() -> PostgreSQLExplain_Plan {
   PostgreSQLExplain_Plan::{
     node_type: String::default(),
     parent_relationship: String::default(),
@@ -925,7 +927,7 @@ pub fn PostgreSQLExplain_Plan::new(
 }
 
 ///|
-pub impl @protobuf.Read for PostgreSQLExplain_Plan with read_with_limit(
+pub impl @protobuf.Read for PostgreSQLExplain_Plan with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> PostgreSQLExplain_Plan raise {
   let msg = PostgreSQLExplain_Plan::default()
@@ -976,7 +978,7 @@ pub impl @protobuf.Read for PostgreSQLExplain_Plan with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for PostgreSQLExplain_Plan with write(
+pub impl @protobuf.Write for PostgreSQLExplain_Plan with fn write(
   self : PostgreSQLExplain_Plan,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -1050,7 +1052,7 @@ pub impl @protobuf.Write for PostgreSQLExplain_Plan with write(
 }
 
 ///|
-pub impl ToJson for PostgreSQLExplain_Plan with to_json(self) {
+pub impl ToJson for PostgreSQLExplain_Plan with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.node_type != Default::default() {
     json["Node Type"] = self.node_type.to_json()
@@ -1146,7 +1148,7 @@ pub impl ToJson for PostgreSQLExplain_Plan with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for PostgreSQLExplain_Plan with from_json(
+pub impl @json.FromJson for PostgreSQLExplain_Plan with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> PostgreSQLExplain_Plan raise {
@@ -1219,7 +1221,7 @@ pub impl @json.FromJson for PostgreSQLExplain_Plan with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for PostgreSQLExplain_Plan with read_with_limit(
+pub impl @protobuf.AsyncRead for PostgreSQLExplain_Plan with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> PostgreSQLExplain_Plan raise {
   let msg = PostgreSQLExplain_Plan::default()
@@ -1281,7 +1283,7 @@ pub impl @protobuf.AsyncRead for PostgreSQLExplain_Plan with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for PostgreSQLExplain_Plan with write(
+pub impl @protobuf.AsyncWrite for PostgreSQLExplain_Plan with fn write(
   self : PostgreSQLExplain_Plan,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -1369,7 +1371,7 @@ pub(all) struct PostgreSQLExplain_Planning {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for PostgreSQLExplain_Planning with size_of(self) {
+pub impl @protobuf.Sized for PostgreSQLExplain_Planning with fn size_of(self) {
   let mut size = 0U
   size += 1U + @protobuf.size_of(self.shared_hit_blocks)
   size += 1U + @protobuf.size_of(self.shared_read_blocks)
@@ -1385,7 +1387,7 @@ pub impl @protobuf.Sized for PostgreSQLExplain_Planning with size_of(self) {
 }
 
 ///|
-pub impl Default for PostgreSQLExplain_Planning with default() -> PostgreSQLExplain_Planning {
+pub impl Default for PostgreSQLExplain_Planning with fn default() -> PostgreSQLExplain_Planning {
   PostgreSQLExplain_Planning::{
     shared_hit_blocks: UInt64::default(),
     shared_read_blocks: UInt64::default(),
@@ -1428,7 +1430,7 @@ pub fn PostgreSQLExplain_Planning::new(
 }
 
 ///|
-pub impl @protobuf.Read for PostgreSQLExplain_Planning with read_with_limit(
+pub impl @protobuf.Read for PostgreSQLExplain_Planning with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> PostgreSQLExplain_Planning raise {
   let msg = PostgreSQLExplain_Planning::default()
@@ -1456,7 +1458,7 @@ pub impl @protobuf.Read for PostgreSQLExplain_Planning with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for PostgreSQLExplain_Planning with write(
+pub impl @protobuf.Write for PostgreSQLExplain_Planning with fn write(
   self : PostgreSQLExplain_Planning,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -1483,7 +1485,7 @@ pub impl @protobuf.Write for PostgreSQLExplain_Planning with write(
 }
 
 ///|
-pub impl ToJson for PostgreSQLExplain_Planning with to_json(self) {
+pub impl ToJson for PostgreSQLExplain_Planning with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.shared_hit_blocks != Default::default() {
     json["Shared Hit Blocks"] = self.shared_hit_blocks.to_json()
@@ -1519,7 +1521,7 @@ pub impl ToJson for PostgreSQLExplain_Planning with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for PostgreSQLExplain_Planning with from_json(
+pub impl @json.FromJson for PostgreSQLExplain_Planning with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> PostgreSQLExplain_Planning raise {
@@ -1558,7 +1560,7 @@ pub impl @json.FromJson for PostgreSQLExplain_Planning with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for PostgreSQLExplain_Planning with read_with_limit(
+pub impl @protobuf.AsyncRead for PostgreSQLExplain_Planning with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> PostgreSQLExplain_Planning raise {
   let msg = PostgreSQLExplain_Planning::default()
@@ -1594,7 +1596,7 @@ pub impl @protobuf.AsyncRead for PostgreSQLExplain_Planning with read_with_limit
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for PostgreSQLExplain_Planning with write(
+pub impl @protobuf.AsyncWrite for PostgreSQLExplain_Planning with fn write(
   self : PostgreSQLExplain_Planning,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -1628,7 +1630,7 @@ pub(all) struct PostgreSQLExplain {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for PostgreSQLExplain with size_of(self) {
+pub impl @protobuf.Sized for PostgreSQLExplain with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -1660,7 +1662,7 @@ pub impl @protobuf.Sized for PostgreSQLExplain with size_of(self) {
 }
 
 ///|
-pub impl Default for PostgreSQLExplain with default() -> PostgreSQLExplain {
+pub impl Default for PostgreSQLExplain with fn default() -> PostgreSQLExplain {
   PostgreSQLExplain::{
     plan: PostgreSQLExplain_Plan::default(),
     settings: {},
@@ -1678,7 +1680,7 @@ pub fn PostgreSQLExplain::new(
 }
 
 ///|
-pub impl @protobuf.Read for PostgreSQLExplain with read_with_limit(
+pub impl @protobuf.Read for PostgreSQLExplain with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> PostgreSQLExplain raise {
   let msg = PostgreSQLExplain::default()
@@ -1707,7 +1709,7 @@ pub impl @protobuf.Read for PostgreSQLExplain with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for PostgreSQLExplain with write(
+pub impl @protobuf.Write for PostgreSQLExplain with fn write(
   self : PostgreSQLExplain,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -1741,7 +1743,7 @@ pub impl @protobuf.Write for PostgreSQLExplain with write(
 }
 
 ///|
-pub impl ToJson for PostgreSQLExplain with to_json(self) {
+pub impl ToJson for PostgreSQLExplain with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.plan != Default::default() {
     json["Plan"] = self.plan.to_json()
@@ -1756,7 +1758,7 @@ pub impl ToJson for PostgreSQLExplain with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for PostgreSQLExplain with from_json(
+pub impl @json.FromJson for PostgreSQLExplain with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> PostgreSQLExplain raise {
@@ -1778,7 +1780,7 @@ pub impl @json.FromJson for PostgreSQLExplain with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for PostgreSQLExplain with read_with_limit(
+pub impl @protobuf.AsyncRead for PostgreSQLExplain with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> PostgreSQLExplain raise {
   let msg = PostgreSQLExplain::default()
@@ -1809,7 +1811,7 @@ pub impl @protobuf.AsyncRead for PostgreSQLExplain with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for PostgreSQLExplain with write(
+pub impl @protobuf.AsyncWrite for PostgreSQLExplain with fn write(
   self : PostgreSQLExplain,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -1848,7 +1850,7 @@ pub(all) struct MySQL {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for MySQL with size_of(self) {
+pub impl @protobuf.Sized for MySQL with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -1859,7 +1861,7 @@ pub impl @protobuf.Sized for MySQL with size_of(self) {
 }
 
 ///|
-pub impl Default for MySQL with default() -> MySQL {
+pub impl Default for MySQL with fn default() -> MySQL {
   MySQL::{ explain: MySQLExplain::default() }
 }
 
@@ -1869,7 +1871,7 @@ pub fn MySQL::new(explain : MySQLExplain) -> MySQL {
 }
 
 ///|
-pub impl @protobuf.Read for MySQL with read_with_limit(
+pub impl @protobuf.Read for MySQL with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> MySQL raise {
   let msg = MySQL::default()
@@ -1889,7 +1891,7 @@ pub impl @protobuf.Read for MySQL with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for MySQL with write(
+pub impl @protobuf.Write for MySQL with fn write(
   self : MySQL,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -1899,7 +1901,7 @@ pub impl @protobuf.Write for MySQL with write(
 }
 
 ///|
-pub impl ToJson for MySQL with to_json(self) {
+pub impl ToJson for MySQL with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.explain != Default::default() {
     json["explain"] = self.explain.to_json()
@@ -1908,7 +1910,7 @@ pub impl ToJson for MySQL with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for MySQL with from_json(
+pub impl @json.FromJson for MySQL with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> MySQL raise {
@@ -1926,7 +1928,7 @@ pub impl @json.FromJson for MySQL with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for MySQL with read_with_limit(
+pub impl @protobuf.AsyncRead for MySQL with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> MySQL raise {
   let msg = MySQL::default()
@@ -1946,7 +1948,7 @@ pub impl @protobuf.AsyncRead for MySQL with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for MySQL with write(
+pub impl @protobuf.AsyncWrite for MySQL with fn write(
   self : MySQL,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -1962,7 +1964,7 @@ pub(all) struct MySQLExplain_QueryBlock_CostInfoEntry {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for MySQLExplain_QueryBlock_CostInfoEntry with size_of(
+pub impl @protobuf.Sized for MySQLExplain_QueryBlock_CostInfoEntry with fn size_of(
   self,
 ) {
   let mut size = 0U
@@ -1980,7 +1982,7 @@ pub impl @protobuf.Sized for MySQLExplain_QueryBlock_CostInfoEntry with size_of(
 }
 
 ///|
-pub impl Default for MySQLExplain_QueryBlock_CostInfoEntry with default() -> MySQLExplain_QueryBlock_CostInfoEntry {
+pub impl Default for MySQLExplain_QueryBlock_CostInfoEntry with fn default() -> MySQLExplain_QueryBlock_CostInfoEntry {
   MySQLExplain_QueryBlock_CostInfoEntry::{
     key: String::default(),
     value: String::default(),
@@ -1996,7 +1998,7 @@ pub fn MySQLExplain_QueryBlock_CostInfoEntry::new(
 }
 
 ///|
-pub impl @protobuf.Read for MySQLExplain_QueryBlock_CostInfoEntry with read_with_limit(
+pub impl @protobuf.Read for MySQLExplain_QueryBlock_CostInfoEntry with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> MySQLExplain_QueryBlock_CostInfoEntry raise {
   let msg = MySQLExplain_QueryBlock_CostInfoEntry::default()
@@ -2016,7 +2018,7 @@ pub impl @protobuf.Read for MySQLExplain_QueryBlock_CostInfoEntry with read_with
 }
 
 ///|
-pub impl @protobuf.Write for MySQLExplain_QueryBlock_CostInfoEntry with write(
+pub impl @protobuf.Write for MySQLExplain_QueryBlock_CostInfoEntry with fn write(
   self : MySQLExplain_QueryBlock_CostInfoEntry,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -2027,7 +2029,7 @@ pub impl @protobuf.Write for MySQLExplain_QueryBlock_CostInfoEntry with write(
 }
 
 ///|
-pub impl ToJson for MySQLExplain_QueryBlock_CostInfoEntry with to_json(self) {
+pub impl ToJson for MySQLExplain_QueryBlock_CostInfoEntry with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.key != Default::default() {
     json["key"] = self.key.to_json()
@@ -2039,7 +2041,7 @@ pub impl ToJson for MySQLExplain_QueryBlock_CostInfoEntry with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for MySQLExplain_QueryBlock_CostInfoEntry with from_json(
+pub impl @json.FromJson for MySQLExplain_QueryBlock_CostInfoEntry with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> MySQLExplain_QueryBlock_CostInfoEntry raise {
@@ -2060,7 +2062,7 @@ pub impl @json.FromJson for MySQLExplain_QueryBlock_CostInfoEntry with from_json
 }
 
 ///|
-pub impl @protobuf.AsyncRead for MySQLExplain_QueryBlock_CostInfoEntry with read_with_limit(
+pub impl @protobuf.AsyncRead for MySQLExplain_QueryBlock_CostInfoEntry with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> MySQLExplain_QueryBlock_CostInfoEntry raise {
   let msg = MySQLExplain_QueryBlock_CostInfoEntry::default()
@@ -2080,7 +2082,7 @@ pub impl @protobuf.AsyncRead for MySQLExplain_QueryBlock_CostInfoEntry with read
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for MySQLExplain_QueryBlock_CostInfoEntry with write(
+pub impl @protobuf.AsyncWrite for MySQLExplain_QueryBlock_CostInfoEntry with fn write(
   self : MySQLExplain_QueryBlock_CostInfoEntry,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -2101,7 +2103,7 @@ pub(all) struct MySQLExplain_QueryBlock {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for MySQLExplain_QueryBlock with size_of(self) {
+pub impl @protobuf.Sized for MySQLExplain_QueryBlock with fn size_of(self) {
   let mut size = 0U
   size += 1U + @protobuf.size_of(self.select_id)
   size += 1U +
@@ -2143,7 +2145,7 @@ pub impl @protobuf.Sized for MySQLExplain_QueryBlock with size_of(self) {
 }
 
 ///|
-pub impl Default for MySQLExplain_QueryBlock with default() -> MySQLExplain_QueryBlock {
+pub impl Default for MySQLExplain_QueryBlock with fn default() -> MySQLExplain_QueryBlock {
   MySQLExplain_QueryBlock::{
     select_id: UInt64::default(),
     message: String::default(),
@@ -2174,7 +2176,7 @@ pub fn MySQLExplain_QueryBlock::new(
 }
 
 ///|
-pub impl @protobuf.Read for MySQLExplain_QueryBlock with read_with_limit(
+pub impl @protobuf.Read for MySQLExplain_QueryBlock with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> MySQLExplain_QueryBlock raise {
   let msg = MySQLExplain_QueryBlock::default()
@@ -2209,7 +2211,7 @@ pub impl @protobuf.Read for MySQLExplain_QueryBlock with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for MySQLExplain_QueryBlock with write(
+pub impl @protobuf.Write for MySQLExplain_QueryBlock with fn write(
   self : MySQLExplain_QueryBlock,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -2252,7 +2254,7 @@ pub impl @protobuf.Write for MySQLExplain_QueryBlock with write(
 }
 
 ///|
-pub impl ToJson for MySQLExplain_QueryBlock with to_json(self) {
+pub impl ToJson for MySQLExplain_QueryBlock with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.select_id != Default::default() {
     json["selectId"] = self.select_id.to_json()
@@ -2276,7 +2278,7 @@ pub impl ToJson for MySQLExplain_QueryBlock with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for MySQLExplain_QueryBlock with from_json(
+pub impl @json.FromJson for MySQLExplain_QueryBlock with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> MySQLExplain_QueryBlock raise {
@@ -2303,7 +2305,7 @@ pub impl @json.FromJson for MySQLExplain_QueryBlock with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for MySQLExplain_QueryBlock with read_with_limit(
+pub impl @protobuf.AsyncRead for MySQLExplain_QueryBlock with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> MySQLExplain_QueryBlock raise {
   let msg = MySQLExplain_QueryBlock::default()
@@ -2342,7 +2344,7 @@ pub impl @protobuf.AsyncRead for MySQLExplain_QueryBlock with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for MySQLExplain_QueryBlock with write(
+pub impl @protobuf.AsyncWrite for MySQLExplain_QueryBlock with fn write(
   self : MySQLExplain_QueryBlock,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -2392,7 +2394,9 @@ pub(all) struct MySQLExplain_Table_CostInfoEntry {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for MySQLExplain_Table_CostInfoEntry with size_of(self) {
+pub impl @protobuf.Sized for MySQLExplain_Table_CostInfoEntry with fn size_of(
+  self,
+) {
   let mut size = 0U
   size += 1U +
     ({
@@ -2408,7 +2412,7 @@ pub impl @protobuf.Sized for MySQLExplain_Table_CostInfoEntry with size_of(self)
 }
 
 ///|
-pub impl Default for MySQLExplain_Table_CostInfoEntry with default() -> MySQLExplain_Table_CostInfoEntry {
+pub impl Default for MySQLExplain_Table_CostInfoEntry with fn default() -> MySQLExplain_Table_CostInfoEntry {
   MySQLExplain_Table_CostInfoEntry::{
     key: String::default(),
     value: String::default(),
@@ -2424,7 +2428,7 @@ pub fn MySQLExplain_Table_CostInfoEntry::new(
 }
 
 ///|
-pub impl @protobuf.Read for MySQLExplain_Table_CostInfoEntry with read_with_limit(
+pub impl @protobuf.Read for MySQLExplain_Table_CostInfoEntry with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> MySQLExplain_Table_CostInfoEntry raise {
   let msg = MySQLExplain_Table_CostInfoEntry::default()
@@ -2444,7 +2448,7 @@ pub impl @protobuf.Read for MySQLExplain_Table_CostInfoEntry with read_with_limi
 }
 
 ///|
-pub impl @protobuf.Write for MySQLExplain_Table_CostInfoEntry with write(
+pub impl @protobuf.Write for MySQLExplain_Table_CostInfoEntry with fn write(
   self : MySQLExplain_Table_CostInfoEntry,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -2455,7 +2459,7 @@ pub impl @protobuf.Write for MySQLExplain_Table_CostInfoEntry with write(
 }
 
 ///|
-pub impl ToJson for MySQLExplain_Table_CostInfoEntry with to_json(self) {
+pub impl ToJson for MySQLExplain_Table_CostInfoEntry with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.key != Default::default() {
     json["key"] = self.key.to_json()
@@ -2467,7 +2471,7 @@ pub impl ToJson for MySQLExplain_Table_CostInfoEntry with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for MySQLExplain_Table_CostInfoEntry with from_json(
+pub impl @json.FromJson for MySQLExplain_Table_CostInfoEntry with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> MySQLExplain_Table_CostInfoEntry raise {
@@ -2488,7 +2492,7 @@ pub impl @json.FromJson for MySQLExplain_Table_CostInfoEntry with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for MySQLExplain_Table_CostInfoEntry with read_with_limit(
+pub impl @protobuf.AsyncRead for MySQLExplain_Table_CostInfoEntry with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> MySQLExplain_Table_CostInfoEntry raise {
   let msg = MySQLExplain_Table_CostInfoEntry::default()
@@ -2508,7 +2512,7 @@ pub impl @protobuf.AsyncRead for MySQLExplain_Table_CostInfoEntry with read_with
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for MySQLExplain_Table_CostInfoEntry with write(
+pub impl @protobuf.AsyncWrite for MySQLExplain_Table_CostInfoEntry with fn write(
   self : MySQLExplain_Table_CostInfoEntry,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -2536,7 +2540,7 @@ pub(all) struct MySQLExplain_Table {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for MySQLExplain_Table with size_of(self) {
+pub impl @protobuf.Sized for MySQLExplain_Table with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -2602,7 +2606,7 @@ pub impl @protobuf.Sized for MySQLExplain_Table with size_of(self) {
 }
 
 ///|
-pub impl Default for MySQLExplain_Table with default() -> MySQLExplain_Table {
+pub impl Default for MySQLExplain_Table with fn default() -> MySQLExplain_Table {
   MySQLExplain_Table::{
     table_name: String::default(),
     access_type: String::default(),
@@ -2654,7 +2658,7 @@ pub fn MySQLExplain_Table::new(
 }
 
 ///|
-pub impl @protobuf.Read for MySQLExplain_Table with read_with_limit(
+pub impl @protobuf.Read for MySQLExplain_Table with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> MySQLExplain_Table raise {
   let msg = MySQLExplain_Table::default()
@@ -2690,7 +2694,7 @@ pub impl @protobuf.Read for MySQLExplain_Table with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for MySQLExplain_Table with write(
+pub impl @protobuf.Write for MySQLExplain_Table with fn write(
   self : MySQLExplain_Table,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -2750,7 +2754,7 @@ pub impl @protobuf.Write for MySQLExplain_Table with write(
 }
 
 ///|
-pub impl ToJson for MySQLExplain_Table with to_json(self) {
+pub impl ToJson for MySQLExplain_Table with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.table_name != Default::default() {
     json["tableName"] = self.table_name.to_json()
@@ -2795,7 +2799,7 @@ pub impl ToJson for MySQLExplain_Table with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for MySQLExplain_Table with from_json(
+pub impl @json.FromJson for MySQLExplain_Table with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> MySQLExplain_Table raise {
@@ -2834,7 +2838,7 @@ pub impl @json.FromJson for MySQLExplain_Table with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for MySQLExplain_Table with read_with_limit(
+pub impl @protobuf.AsyncRead for MySQLExplain_Table with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> MySQLExplain_Table raise {
   let msg = MySQLExplain_Table::default()
@@ -2874,7 +2878,7 @@ pub impl @protobuf.AsyncRead for MySQLExplain_Table with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for MySQLExplain_Table with write(
+pub impl @protobuf.AsyncWrite for MySQLExplain_Table with fn write(
   self : MySQLExplain_Table,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -2939,7 +2943,7 @@ pub(all) struct MySQLExplain_NestedLoopObj {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for MySQLExplain_NestedLoopObj with size_of(self) {
+pub impl @protobuf.Sized for MySQLExplain_NestedLoopObj with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -2950,7 +2954,7 @@ pub impl @protobuf.Sized for MySQLExplain_NestedLoopObj with size_of(self) {
 }
 
 ///|
-pub impl Default for MySQLExplain_NestedLoopObj with default() -> MySQLExplain_NestedLoopObj {
+pub impl Default for MySQLExplain_NestedLoopObj with fn default() -> MySQLExplain_NestedLoopObj {
   MySQLExplain_NestedLoopObj::{ table: MySQLExplain_Table::default() }
 }
 
@@ -2962,7 +2966,7 @@ pub fn MySQLExplain_NestedLoopObj::new(
 }
 
 ///|
-pub impl @protobuf.Read for MySQLExplain_NestedLoopObj with read_with_limit(
+pub impl @protobuf.Read for MySQLExplain_NestedLoopObj with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> MySQLExplain_NestedLoopObj raise {
   let msg = MySQLExplain_NestedLoopObj::default()
@@ -2982,7 +2986,7 @@ pub impl @protobuf.Read for MySQLExplain_NestedLoopObj with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for MySQLExplain_NestedLoopObj with write(
+pub impl @protobuf.Write for MySQLExplain_NestedLoopObj with fn write(
   self : MySQLExplain_NestedLoopObj,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -2992,7 +2996,7 @@ pub impl @protobuf.Write for MySQLExplain_NestedLoopObj with write(
 }
 
 ///|
-pub impl ToJson for MySQLExplain_NestedLoopObj with to_json(self) {
+pub impl ToJson for MySQLExplain_NestedLoopObj with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.table != Default::default() {
     json["table"] = self.table.to_json()
@@ -3001,7 +3005,7 @@ pub impl ToJson for MySQLExplain_NestedLoopObj with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for MySQLExplain_NestedLoopObj with from_json(
+pub impl @json.FromJson for MySQLExplain_NestedLoopObj with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> MySQLExplain_NestedLoopObj raise {
@@ -3021,7 +3025,7 @@ pub impl @json.FromJson for MySQLExplain_NestedLoopObj with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for MySQLExplain_NestedLoopObj with read_with_limit(
+pub impl @protobuf.AsyncRead for MySQLExplain_NestedLoopObj with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> MySQLExplain_NestedLoopObj raise {
   let msg = MySQLExplain_NestedLoopObj::default()
@@ -3042,7 +3046,7 @@ pub impl @protobuf.AsyncRead for MySQLExplain_NestedLoopObj with read_with_limit
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for MySQLExplain_NestedLoopObj with write(
+pub impl @protobuf.AsyncWrite for MySQLExplain_NestedLoopObj with fn write(
   self : MySQLExplain_NestedLoopObj,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -3058,7 +3062,7 @@ pub(all) struct MySQLExplain_OrderingOperation_CostInfoEntry {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for MySQLExplain_OrderingOperation_CostInfoEntry with size_of(
+pub impl @protobuf.Sized for MySQLExplain_OrderingOperation_CostInfoEntry with fn size_of(
   self,
 ) {
   let mut size = 0U
@@ -3076,7 +3080,7 @@ pub impl @protobuf.Sized for MySQLExplain_OrderingOperation_CostInfoEntry with s
 }
 
 ///|
-pub impl Default for MySQLExplain_OrderingOperation_CostInfoEntry with default() -> MySQLExplain_OrderingOperation_CostInfoEntry {
+pub impl Default for MySQLExplain_OrderingOperation_CostInfoEntry with fn default() -> MySQLExplain_OrderingOperation_CostInfoEntry {
   MySQLExplain_OrderingOperation_CostInfoEntry::{
     key: String::default(),
     value: String::default(),
@@ -3092,7 +3096,7 @@ pub fn MySQLExplain_OrderingOperation_CostInfoEntry::new(
 }
 
 ///|
-pub impl @protobuf.Read for MySQLExplain_OrderingOperation_CostInfoEntry with read_with_limit(
+pub impl @protobuf.Read for MySQLExplain_OrderingOperation_CostInfoEntry with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> MySQLExplain_OrderingOperation_CostInfoEntry raise {
   let msg = MySQLExplain_OrderingOperation_CostInfoEntry::default()
@@ -3112,7 +3116,7 @@ pub impl @protobuf.Read for MySQLExplain_OrderingOperation_CostInfoEntry with re
 }
 
 ///|
-pub impl @protobuf.Write for MySQLExplain_OrderingOperation_CostInfoEntry with write(
+pub impl @protobuf.Write for MySQLExplain_OrderingOperation_CostInfoEntry with fn write(
   self : MySQLExplain_OrderingOperation_CostInfoEntry,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -3123,7 +3127,7 @@ pub impl @protobuf.Write for MySQLExplain_OrderingOperation_CostInfoEntry with w
 }
 
 ///|
-pub impl ToJson for MySQLExplain_OrderingOperation_CostInfoEntry with to_json(
+pub impl ToJson for MySQLExplain_OrderingOperation_CostInfoEntry with fn to_json(
   self,
 ) {
   let json : Map[String, Json] = {}
@@ -3137,7 +3141,7 @@ pub impl ToJson for MySQLExplain_OrderingOperation_CostInfoEntry with to_json(
 }
 
 ///|
-pub impl @json.FromJson for MySQLExplain_OrderingOperation_CostInfoEntry with from_json(
+pub impl @json.FromJson for MySQLExplain_OrderingOperation_CostInfoEntry with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> MySQLExplain_OrderingOperation_CostInfoEntry raise {
@@ -3160,7 +3164,7 @@ pub impl @json.FromJson for MySQLExplain_OrderingOperation_CostInfoEntry with fr
 }
 
 ///|
-pub impl @protobuf.AsyncRead for MySQLExplain_OrderingOperation_CostInfoEntry with read_with_limit(
+pub impl @protobuf.AsyncRead for MySQLExplain_OrderingOperation_CostInfoEntry with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> MySQLExplain_OrderingOperation_CostInfoEntry raise {
   let msg = MySQLExplain_OrderingOperation_CostInfoEntry::default()
@@ -3180,7 +3184,7 @@ pub impl @protobuf.AsyncRead for MySQLExplain_OrderingOperation_CostInfoEntry wi
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for MySQLExplain_OrderingOperation_CostInfoEntry with write(
+pub impl @protobuf.AsyncWrite for MySQLExplain_OrderingOperation_CostInfoEntry with fn write(
   self : MySQLExplain_OrderingOperation_CostInfoEntry,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -3199,7 +3203,9 @@ pub(all) struct MySQLExplain_OrderingOperation {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for MySQLExplain_OrderingOperation with size_of(self) {
+pub impl @protobuf.Sized for MySQLExplain_OrderingOperation with fn size_of(
+  self,
+) {
   let mut size = 0U
   size += 1U + @protobuf.size_of(self.using_filesort)
   for k, v in self.cost_info {
@@ -3231,7 +3237,7 @@ pub impl @protobuf.Sized for MySQLExplain_OrderingOperation with size_of(self) {
 }
 
 ///|
-pub impl Default for MySQLExplain_OrderingOperation with default() -> MySQLExplain_OrderingOperation {
+pub impl Default for MySQLExplain_OrderingOperation with fn default() -> MySQLExplain_OrderingOperation {
   MySQLExplain_OrderingOperation::{
     using_filesort: Bool::default(),
     cost_info: {},
@@ -3256,7 +3262,7 @@ pub fn MySQLExplain_OrderingOperation::new(
 }
 
 ///|
-pub impl @protobuf.Read for MySQLExplain_OrderingOperation with read_with_limit(
+pub impl @protobuf.Read for MySQLExplain_OrderingOperation with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> MySQLExplain_OrderingOperation raise {
   let msg = MySQLExplain_OrderingOperation::default()
@@ -3287,7 +3293,7 @@ pub impl @protobuf.Read for MySQLExplain_OrderingOperation with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for MySQLExplain_OrderingOperation with write(
+pub impl @protobuf.Write for MySQLExplain_OrderingOperation with fn write(
   self : MySQLExplain_OrderingOperation,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -3325,7 +3331,7 @@ pub impl @protobuf.Write for MySQLExplain_OrderingOperation with write(
 }
 
 ///|
-pub impl ToJson for MySQLExplain_OrderingOperation with to_json(self) {
+pub impl ToJson for MySQLExplain_OrderingOperation with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.using_filesort != Default::default() {
     json["usingFilesort"] = self.using_filesort.to_json()
@@ -3343,7 +3349,7 @@ pub impl ToJson for MySQLExplain_OrderingOperation with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for MySQLExplain_OrderingOperation with from_json(
+pub impl @json.FromJson for MySQLExplain_OrderingOperation with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> MySQLExplain_OrderingOperation raise {
@@ -3368,7 +3374,7 @@ pub impl @json.FromJson for MySQLExplain_OrderingOperation with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for MySQLExplain_OrderingOperation with read_with_limit(
+pub impl @protobuf.AsyncRead for MySQLExplain_OrderingOperation with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> MySQLExplain_OrderingOperation raise {
   let msg = MySQLExplain_OrderingOperation::default()
@@ -3402,7 +3408,7 @@ pub impl @protobuf.AsyncRead for MySQLExplain_OrderingOperation with read_with_l
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for MySQLExplain_OrderingOperation with write(
+pub impl @protobuf.AsyncWrite for MySQLExplain_OrderingOperation with fn write(
   self : MySQLExplain_OrderingOperation,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -3445,7 +3451,7 @@ pub(all) struct MySQLExplain {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for MySQLExplain with size_of(self) {
+pub impl @protobuf.Sized for MySQLExplain with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -3456,7 +3462,7 @@ pub impl @protobuf.Sized for MySQLExplain with size_of(self) {
 }
 
 ///|
-pub impl Default for MySQLExplain with default() -> MySQLExplain {
+pub impl Default for MySQLExplain with fn default() -> MySQLExplain {
   MySQLExplain::{ query_block: MySQLExplain_QueryBlock::default() }
 }
 
@@ -3466,7 +3472,7 @@ pub fn MySQLExplain::new(query_block : MySQLExplain_QueryBlock) -> MySQLExplain 
 }
 
 ///|
-pub impl @protobuf.Read for MySQLExplain with read_with_limit(
+pub impl @protobuf.Read for MySQLExplain with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> MySQLExplain raise {
   let msg = MySQLExplain::default()
@@ -3487,7 +3493,7 @@ pub impl @protobuf.Read for MySQLExplain with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for MySQLExplain with write(
+pub impl @protobuf.Write for MySQLExplain with fn write(
   self : MySQLExplain,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -3497,7 +3503,7 @@ pub impl @protobuf.Write for MySQLExplain with write(
 }
 
 ///|
-pub impl ToJson for MySQLExplain with to_json(self) {
+pub impl ToJson for MySQLExplain with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.query_block != Default::default() {
     json["queryBlock"] = self.query_block.to_json()
@@ -3506,7 +3512,7 @@ pub impl ToJson for MySQLExplain with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for MySQLExplain with from_json(
+pub impl @json.FromJson for MySQLExplain with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> MySQLExplain raise {
@@ -3525,7 +3531,7 @@ pub impl @json.FromJson for MySQLExplain with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for MySQLExplain with read_with_limit(
+pub impl @protobuf.AsyncRead for MySQLExplain with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> MySQLExplain raise {
   let msg = MySQLExplain::default()
@@ -3546,7 +3552,7 @@ pub impl @protobuf.AsyncRead for MySQLExplain with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for MySQLExplain with write(
+pub impl @protobuf.AsyncWrite for MySQLExplain with fn write(
   self : MySQLExplain,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {

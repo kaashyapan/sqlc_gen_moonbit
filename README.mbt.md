@@ -447,6 +447,7 @@ The pattern:
 
 ```moonbit nocheck
 // 1. Sqlc-generated query lives in the `@db` package.
+
 ///|
 async fn list_pages_markdown(
   binding : String,

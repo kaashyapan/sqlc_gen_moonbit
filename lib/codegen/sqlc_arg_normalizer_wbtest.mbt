@@ -60,7 +60,11 @@ fn issue18_request() -> @plugin.GenerateRequest {
     ],
     comments: [],
     filename: "query.sql",
-    insert_into_table: @plugin.Identifier::{ catalog: "", schema: "", name: "t" },
+    insert_into_table: @plugin.Identifier::{
+      catalog: "",
+      schema: "",
+      name: "t",
+    },
   }
   let request = @plugin.GenerateRequest::default()
   request.catalog = @plugin.Catalog::{
@@ -160,7 +164,12 @@ test "normalize sqlc.arg left in ON CONFLICT DO UPDATE" {
 test "normalized sqlc.arg is emitted in types and D1 bind sequence" {
   let request = issue18_request()
   normalize_sqlc_args_in_request(request, D1)
-  let options = Options::{ backend: D1, validators: false, json_schema: false, overrides: [] }
+  let options = Options::{
+    backend: D1,
+    validators: false,
+    json_schema: false,
+    overrides: [],
+  }
   let types = generate_types(request, options)
   assert_true(types.contains("new_slug : String"))
   assert_true(
@@ -169,7 +178,11 @@ test "normalized sqlc.arg is emitted in types and D1 bind sequence" {
     ),
   )
   let queries = generate_queries_d1(request, [])
-  assert_true(queries.contains(".bind([d1_bind_int64(params.id), @core.any(params.value), @core.any(params.slug), @core.any(params.new_slug)])"))
+  assert_true(
+    queries.contains(
+      ".bind([d1_bind_int64(params.id), @core.any(params.value), @core.any(params.slug), @core.any(params.new_slug)])",
+    ),
+  )
   assert_false(queries.contains("sqlc.arg"))
 }
 
@@ -204,14 +217,27 @@ test "plain SUM row type stays nullable when sqlc cannot infer it" {
 test "normalized aggregate inference is emitted in D1 types and binds" {
   let request = issue19_request()
   normalize_sqlc_args_in_request(request, D1)
-  let options = Options::{ backend: D1, validators: false, json_schema: false, overrides: [] }
+  let options = Options::{
+    backend: D1,
+    validators: false,
+    json_schema: false,
+    overrides: [],
+  }
   let types = generate_types(request, options)
   assert_true(types.contains("pack_count : Int64"))
   assert_true(types.contains("pack_bytes : Int64"))
   assert_true(types.contains("min_packs : Int64"))
   assert_true(types.contains("min_bytes : Int64"))
   let queries = generate_queries_d1(request, [])
-  assert_true(queries.contains(".bind([d1_bind_int64(params.min_packs), d1_bind_int64(params.min_bytes)])"))
-  assert_true(queries.contains("pack_bytes: d1_read_int64(d1_require_field(row, \"pack_bytes\"))"))
+  assert_true(
+    queries.contains(
+      ".bind([d1_bind_int64(params.min_packs), d1_bind_int64(params.min_bytes)])",
+    ),
+  )
+  assert_true(
+    queries.contains(
+      "pack_bytes: d1_read_int64(d1_require_field(row, \"pack_bytes\"))",
+    ),
+  )
   assert_false(queries.contains("sqlc.arg"))
 }

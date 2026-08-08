@@ -11,7 +11,7 @@ pub fn SqliteBackend::new() -> SqliteBackend {
 }
 
 ///|
-impl BackendCodeGen for SqliteBackend with info(_self) {
+impl BackendCodeGen for SqliteBackend with fn info(_self) {
   BackendInfo::new(
     "sqlite",
     "@sqlite.Sqlite3",
@@ -23,7 +23,7 @@ impl BackendCodeGen for SqliteBackend with info(_self) {
 }
 
 ///|
-impl BackendCodeGen for SqliteBackend with generate_helpers(_self, buf) {
+impl BackendCodeGen for SqliteBackend with fn generate_helpers(_self, buf) {
   // cstring helper
   buf.write_string("///|\nfn cstring(s : String) -> Bytes {\n")
   buf.write_string("  @encoding.encode(@encoding.UTF8, s)\n")
@@ -49,7 +49,7 @@ impl BackendCodeGen for SqliteBackend with generate_helpers(_self, buf) {
 }
 
 ///|
-impl BackendCodeGen for SqliteBackend with param_bind_expr(
+impl BackendCodeGen for SqliteBackend with fn param_bind_expr(
   _self,
   col,
   idx,
@@ -106,7 +106,7 @@ impl BackendCodeGen for SqliteBackend with param_bind_expr(
 }
 
 ///|
-impl BackendCodeGen for SqliteBackend with column_read_expr(
+impl BackendCodeGen for SqliteBackend with fn column_read_expr(
   _self,
   col,
   idx,
@@ -143,7 +143,7 @@ impl BackendCodeGen for SqliteBackend with column_read_expr(
 }
 
 ///|
-impl BackendCodeGen for SqliteBackend with generate_one(
+impl BackendCodeGen for SqliteBackend with fn generate_one(
   self,
   buf,
   query,
@@ -194,7 +194,7 @@ impl BackendCodeGen for SqliteBackend with generate_one(
 }
 
 ///|
-impl BackendCodeGen for SqliteBackend with generate_many(
+impl BackendCodeGen for SqliteBackend with fn generate_many(
   self,
   buf,
   query,
@@ -250,7 +250,7 @@ impl BackendCodeGen for SqliteBackend with generate_many(
 }
 
 ///|
-impl BackendCodeGen for SqliteBackend with generate_exec(
+impl BackendCodeGen for SqliteBackend with fn generate_exec(
   self,
   buf,
   query,
@@ -280,7 +280,7 @@ impl BackendCodeGen for SqliteBackend with generate_exec(
 }
 
 ///|
-impl BackendCodeGen for SqliteBackend with generate_execrows(
+impl BackendCodeGen for SqliteBackend with fn generate_execrows(
   self,
   buf,
   query,
@@ -311,7 +311,7 @@ impl BackendCodeGen for SqliteBackend with generate_execrows(
 }
 
 ///|
-impl BackendCodeGen for SqliteBackend with generate_execlastid(
+impl BackendCodeGen for SqliteBackend with fn generate_execlastid(
   self,
   buf,
   query,

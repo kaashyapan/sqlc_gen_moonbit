@@ -14,9 +14,7 @@ pub fn generate_queries_postgres_js(
   buf.write_string(
     "extern \"js\" fn js_number_to_int64(v : @core.Any) -> Int64 =\n",
   )
-  buf.write_string(
-    "  #| (v) => BigInt(Math.trunc(Number(v)))\n\n",
-  )
+  buf.write_string("  #| (v) => BigInt(Math.trunc(Number(v)))\n\n")
   buf.write_string("///| Convert Int64 to JavaScript number\n")
   buf.write_string(
     "extern \"js\" fn int64_to_js_number(v : Int64) -> @core.Any =\n",

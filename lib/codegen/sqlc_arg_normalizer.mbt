@@ -1,8 +1,8 @@
+///|
 /// Plugin-side fixup for sqlc.arg() / aggregate inference gaps that sqlc can
 /// leave in SQLite/D1 requests. sqlc usually rewrites named args to numbered
 /// placeholders and includes them in Query.params, but some contexts arrive
 /// with raw sqlc.arg('name') text and no matching param.
-
 priv struct SqlcArgOccurrence {
   name : String
   start : Int
@@ -51,11 +51,8 @@ fn normalize_sqlc_args_in_query(
     match find_param_number_by_name(query, occurrence.name) {
       Some(_) => ()
       None => {
-        let source_col = match infer_sqlc_arg_source_column(
-          catalog,
-          query,
-          occurrence,
-        ) {
+        let source_col = match
+          infer_sqlc_arg_source_column(catalog, query, occurrence) {
           Some(col) => col
           None =>
             abort(
@@ -67,16 +64,19 @@ fn normalize_sqlc_args_in_query(
             )
         }
         max_number = max_number + 1
-        query.params.push(
-          @plugin.Parameter::{
-            number: max_number,
-            column: synthetic_named_param_column(occurrence.name, source_col),
-          },
-        )
+        query.params.push(@plugin.Parameter::{
+          number: max_number,
+          column: synthetic_named_param_column(occurrence.name, source_col),
+        })
       }
     }
   }
-  query.text = rewrite_sqlc_arg_occurrences(query.text, occurrences, query, backend)
+  query.text = rewrite_sqlc_arg_occurrences(
+    query.text,
+    occurrences,
+    query,
+    backend,
+  )
 }
 
 ///|
@@ -87,7 +87,12 @@ fn infer_sqlc_arg_source_column(
 ) -> @plugin.Column? {
   match infer_assignment_column_name(query.text, occurrence.start) {
     Some(target_col_name) =>
-      match find_catalog_column(catalog, query.insert_into_table.name, target_col_name) {
+      match
+        find_catalog_column(
+          catalog,
+          query.insert_into_table.name,
+          target_col_name,
+        ) {
         Some(col) => return Some(col)
         None => ()
       }
@@ -323,8 +328,7 @@ fn comparison_lhs_before_arg(text : String, arg_start : Int) -> String? {
     return None
   }
   let op_start = if text[i] == '=' {
-    if i > 0 &&
-       (text[i - 1] == '>' || text[i - 1] == '<' || text[i - 1] == '!') {
+    if i > 0 && (text[i - 1] == '>' || text[i - 1] == '<' || text[i - 1] == '!') {
       i - 1
     } else {
       i
@@ -356,11 +360,12 @@ fn infer_coalesce_sum_column(
           match find_last_substring_before(upper, "COALESCE(", sum_idx) {
             Some(coalesce_idx) =>
               if is_only_ascii_space_between(
-                text,
-                coalesce_idx + "COALESCE(".length(),
-                sum_idx,
-              ) {
-                match parse_function_identifier_arg(text, sum_idx + "SUM(".length()) {
+                  text,
+                  coalesce_idx + "COALESCE(".length(),
+                  sum_idx,
+                ) {
+                match
+                  parse_function_identifier_arg(text, sum_idx + "SUM(".length()) {
                   Some(col_name) =>
                     match find_catalog_column(catalog, "", col_name) {
                       Some(col) => Some(col)
@@ -428,7 +433,11 @@ fn find_last_substring_before(
     return None
   }
   let mut last = -1
-  let limit = if before > haystack.length() { haystack.length() } else { before }
+  let limit = if before > haystack.length() {
+    haystack.length()
+  } else {
+    before
+  }
   let mut i = 0
   while i + needle.length() <= limit {
     if string_matches_at(haystack, i, needle) {
@@ -438,7 +447,11 @@ fn find_last_substring_before(
       i = i + 1
     }
   }
-  if last >= 0 { Some(last) } else { None }
+  if last >= 0 {
+    Some(last)
+  } else {
+    None
+  }
 }
 
 ///|

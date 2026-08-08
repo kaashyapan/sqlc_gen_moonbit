@@ -11,7 +11,7 @@ pub fn PostgresBackend::new() -> PostgresBackend {
 }
 
 ///|
-impl BackendCodeGen for PostgresBackend with info(_self) {
+impl BackendCodeGen for PostgresBackend with fn info(_self) {
   BackendInfo::new(
     "postgres",
     "@postgres.Connection",
@@ -23,12 +23,12 @@ impl BackendCodeGen for PostgresBackend with info(_self) {
 }
 
 ///|
-impl BackendCodeGen for PostgresBackend with generate_helpers(_self, buf) {
+impl BackendCodeGen for PostgresBackend with fn generate_helpers(_self, buf) {
   buf.write_string("// Requires: moonbit-community/postgres\n\n")
 }
 
 ///|
-impl BackendCodeGen for PostgresBackend with param_bind_expr(
+impl BackendCodeGen for PostgresBackend with fn param_bind_expr(
   _self,
   col,
   _idx,
@@ -85,7 +85,7 @@ impl BackendCodeGen for PostgresBackend with param_bind_expr(
 }
 
 ///|
-impl BackendCodeGen for PostgresBackend with column_read_expr(
+impl BackendCodeGen for PostgresBackend with fn column_read_expr(
   _self,
   col,
   idx,
@@ -142,7 +142,7 @@ impl BackendCodeGen for PostgresBackend with column_read_expr(
 }
 
 ///|
-impl BackendCodeGen for PostgresBackend with generate_one(
+impl BackendCodeGen for PostgresBackend with fn generate_one(
   self,
   buf,
   query,
@@ -183,7 +183,7 @@ impl BackendCodeGen for PostgresBackend with generate_one(
 }
 
 ///|
-impl BackendCodeGen for PostgresBackend with generate_many(
+impl BackendCodeGen for PostgresBackend with fn generate_many(
   self,
   buf,
   query,
@@ -226,7 +226,7 @@ impl BackendCodeGen for PostgresBackend with generate_many(
 }
 
 ///|
-impl BackendCodeGen for PostgresBackend with generate_exec(
+impl BackendCodeGen for PostgresBackend with fn generate_exec(
   self,
   buf,
   query,
@@ -253,7 +253,7 @@ impl BackendCodeGen for PostgresBackend with generate_exec(
 }
 
 ///|
-impl BackendCodeGen for PostgresBackend with generate_execrows(
+impl BackendCodeGen for PostgresBackend with fn generate_execrows(
   self,
   buf,
   query,
@@ -281,7 +281,7 @@ impl BackendCodeGen for PostgresBackend with generate_execrows(
 }
 
 ///|
-impl BackendCodeGen for PostgresBackend with generate_execlastid(
+impl BackendCodeGen for PostgresBackend with fn generate_execlastid(
   self,
   buf,
   query,

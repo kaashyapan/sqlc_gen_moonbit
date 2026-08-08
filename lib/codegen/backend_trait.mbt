@@ -26,33 +26,38 @@ pub fn BackendInfo::new(
 /// Trait for backend code generation
 pub trait BackendCodeGen {
   /// Get backend metadata
-  info(Self) -> BackendInfo
+  fn info(Self) -> BackendInfo
 
   /// Generate helper functions (cstring, bytes_to_string, etc.)
-  generate_helpers(Self, StringBuilder) -> Unit
+  fn generate_helpers(Self, StringBuilder) -> Unit
 
   /// Generate parameter binding expression
   /// Returns MoonBit code that binds a parameter value
-  param_bind_expr(Self, @plugin.Column, Int, String) -> String
+  fn param_bind_expr(Self, @plugin.Column, Int, String) -> String
 
   /// Generate column read expression
   /// Returns MoonBit code that reads a column value
-  column_read_expr(Self, @plugin.Column, Int, String) -> String
+  fn column_read_expr(Self, @plugin.Column, Int, String) -> String
 
   /// Generate the full query function for :one command
-  generate_one(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn generate_one(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
 
   /// Generate the full query function for :many command
-  generate_many(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn generate_many(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
 
   /// Generate the full query function for :exec command
-  generate_exec(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn generate_exec(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
 
   /// Generate the full query function for :execrows command
-  generate_execrows(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn generate_execrows(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
 
   /// Generate the full query function for :execlastid command
-  generate_execlastid(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
+  fn generate_execlastid(
+    Self,
+    StringBuilder,
+    @plugin.Query,
+    Array[TypeOverride],
+  ) -> Unit
 }
 
 ///|
