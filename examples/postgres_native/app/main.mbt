@@ -154,9 +154,9 @@ async fn main {
   println("Generated types and queries are in db/gen/")
 
   let config = @client.Config::new(
-    "localhost",
+    "postgres",
     user="postgres",
-    database="testdb",
+    database="postgres",
     password="postgres",
     port=5432,
     ssl_mode=@client.SslMode::Disable,
