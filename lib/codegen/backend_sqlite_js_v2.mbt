@@ -141,7 +141,7 @@ impl BackendCodeGen for SqliteJsBackend with fn generate_one(
   query,
   _overrides,
 ) {
-  let info = self.info()
+  let info = BackendCodeGen::info(self)
   let row_type = backend_get_row_type(query)
   let sql_const = backend_get_sql_const(query)
   let return_type = backend_get_return_type(info, query)
@@ -170,7 +170,7 @@ impl BackendCodeGen for SqliteJsBackend with fn generate_one(
     buf.write_string("      ")
     buf.write_string(to_snake_case(col.name))
     buf.write_string(": ")
-    buf.write_string(self.column_read_expr(col, i, "stmt"))
+    buf.write_string(BackendCodeGen::column_read_expr(self, col, i, "stmt"))
     buf.write_string(",\n")
   }
   buf.write_string("    }\n")
@@ -190,7 +190,7 @@ impl BackendCodeGen for SqliteJsBackend with fn generate_many(
   query,
   _overrides,
 ) {
-  let info = self.info()
+  let info = BackendCodeGen::info(self)
   let row_type = backend_get_row_type(query)
   let sql_const = backend_get_sql_const(query)
   let return_type = backend_get_return_type(info, query)
@@ -222,7 +222,7 @@ impl BackendCodeGen for SqliteJsBackend with fn generate_many(
     buf.write_string("      ")
     buf.write_string(to_snake_case(col.name))
     buf.write_string(": ")
-    buf.write_string(self.column_read_expr(col, i, "stmt"))
+    buf.write_string(BackendCodeGen::column_read_expr(self, col, i, "stmt"))
     buf.write_string(",\n")
   }
   buf.write_string("    }\n")
@@ -240,7 +240,7 @@ impl BackendCodeGen for SqliteJsBackend with fn generate_exec(
   query,
   _overrides,
 ) {
-  let info = self.info()
+  let info = BackendCodeGen::info(self)
   let sql_const = backend_get_sql_const(query)
   let return_type = backend_get_return_type(info, query)
 
@@ -272,7 +272,7 @@ impl BackendCodeGen for SqliteJsBackend with fn generate_execrows(
   query,
   _overrides,
 ) {
-  let info = self.info()
+  let info = BackendCodeGen::info(self)
   let sql_const = backend_get_sql_const(query)
   let return_type = backend_get_return_type(info, query)
 
@@ -305,7 +305,7 @@ impl BackendCodeGen for SqliteJsBackend with fn generate_execlastid(
   query,
   _overrides,
 ) {
-  let info = self.info()
+  let info = BackendCodeGen::info(self)
   let sql_const = backend_get_sql_const(query)
   let return_type = backend_get_return_type(info, query)
 
@@ -347,7 +347,12 @@ fn sqlite_js_write_param_bindings(
       buf.write_string((i + 1).to_string())
       buf.write_string(", ")
       buf.write_string(
-        backend.param_bind_expr(col, i + 1, "params." + param_name),
+        BackendCodeGen::param_bind_expr(
+          backend,
+          col,
+          i + 1,
+          "params." + param_name,
+        ),
       )
       buf.write_string(") |> ignore\n")
     }

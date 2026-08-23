@@ -306,4 +306,3 @@ pub impl @protobuf.Write for Query
 // Type aliases
 
 // Traits
-

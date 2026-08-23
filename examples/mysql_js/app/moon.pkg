@@ -3,6 +3,8 @@ import {
   "mizchi/js/core",
 }
 
+supported_targets = "js"
+
 options(
   "is-main": true,
   link: {
@@ -10,5 +12,4 @@ options(
       "exports": ["main"],
     },
   },
-  "supported-targets": [ "js" ],
 )

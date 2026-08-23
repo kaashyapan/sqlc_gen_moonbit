@@ -73,6 +73,13 @@ cd ../..
 buf generate --template buf.gen.yaml vendor/sqlc/protos
 ```
 
+The repository task also applies the compatibility normalization required by
+the current MoonBit compiler:
+
+```bash
+just generate-proto
+```
+
 This regenerates `lib/proto/` directory with updated MoonBit types.
 
 **Note**: After regeneration, you may need to:

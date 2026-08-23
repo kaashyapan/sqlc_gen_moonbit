@@ -1,6 +1,6 @@
 name = "mizchi/sqlc_gen_moonbit"
 
-version = "0.3.2"
+version = "0.4.0"
 
 import {
   "moonbitlang/protobuf@0.1.1",

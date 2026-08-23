@@ -4,7 +4,7 @@
   "deps": {
     "mizchi/js": "0.10.10",
     "mizchi/cloudflare": "0.1.6",
-    "moonbitlang/async": "0.16.0"
+    "moonbitlang/async": "0.20.3"
   },
   "preferred-target": "js"
 }

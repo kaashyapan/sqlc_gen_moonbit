@@ -151,16 +151,10 @@ fn generate_moon_pkg(options : Options) -> String {
     _ => buf.write_string("")
   }
 
-  // Options block
-  buf.write_string("options(\n")
-
   // Exclude generated files from formatter
-  buf.write_string("  formatter: {\n")
   buf.write_string(
-    "    \"ignore\": [ \"sqlc_types.mbt\", \"sqlc_queries.mbt\", \"sqlc_validators.mbt\" ],\n",
+    "formatter(ignore: [ \"sqlc_types.mbt\", \"sqlc_queries.mbt\", \"sqlc_validators.mbt\" ])\n",
   )
-  buf.write_string("  },\n")
-  buf.write_string(")\n")
   buf.to_string()
 }
 
@@ -190,7 +184,7 @@ fn generate_types(
   }
 
   // Collect unique result structs from queries
-  let generated_structs : Map[String, Bool] = {}
+  let generated_structs : Map[String, Bool] = Map([])
 
   // Generate result structs for queries that return data
   for query in request.queries {

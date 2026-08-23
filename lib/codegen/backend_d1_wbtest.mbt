@@ -55,8 +55,8 @@ test "generate_queries_d1 emits slice helper once" {
     catalog: @plugin.Catalog::default(),
     queries: [],
     sqlc_version: "",
-    plugin_options: Bytes::default(),
-    global_options: Bytes::default(),
+    plugin_options: Default::default(),
+    global_options: Default::default(),
   }
   let out = generate_queries_d1(req, [])
   // Helper is always emitted in the prelude (cheap, lets us avoid
@@ -73,8 +73,8 @@ test "generate_queries_d1 emits Int64 bind helper once" {
     catalog: @plugin.Catalog::default(),
     queries: [],
     sqlc_version: "",
-    plugin_options: Bytes::default(),
-    global_options: Bytes::default(),
+    plugin_options: Default::default(),
+    global_options: Default::default(),
   }
   let out = generate_queries_d1(req, [])
   assert_true(
@@ -105,8 +105,8 @@ test "generate_queries_d1 - static Int64 params use D1-safe Number bind" {
     catalog: @plugin.Catalog::default(),
     queries: [query],
     sqlc_version: "",
-    plugin_options: Bytes::default(),
-    global_options: Bytes::default(),
+    plugin_options: Default::default(),
+    global_options: Default::default(),
   }
   let out = generate_queries_d1(req, [])
   // No slice => the static `.bind([...])` shape is preserved, but Int64
@@ -136,8 +136,8 @@ test "generate_queries_d1 - nullable Int64 params use D1-safe Some arm" {
     catalog: @plugin.Catalog::default(),
     queries: [query],
     sqlc_version: "",
-    plugin_options: Bytes::default(),
-    global_options: Bytes::default(),
+    plugin_options: Default::default(),
+    global_options: Default::default(),
   }
   let out = generate_queries_d1(req, [])
   assert_true(
@@ -170,8 +170,8 @@ test "generate_queries_d1 - slice param triggers dynamic SQL + bind loop" {
     catalog: @plugin.Catalog::default(),
     queries: [query],
     sqlc_version: "",
-    plugin_options: Bytes::default(),
-    global_options: Bytes::default(),
+    plugin_options: Default::default(),
+    global_options: Default::default(),
   }
   let out = generate_queries_d1(req, [])
   // SQL substitution happens at call time.
@@ -214,8 +214,8 @@ test "generate_queries_d1 - mixed scalar + slice params bind in order" {
     catalog: @plugin.Catalog::default(),
     queries: [query],
     sqlc_version: "",
-    plugin_options: Bytes::default(),
-    global_options: Bytes::default(),
+    plugin_options: Default::default(),
+    global_options: Default::default(),
   }
   let out = generate_queries_d1(req, [])
   // Scalar pushed before slice, in declaration order.

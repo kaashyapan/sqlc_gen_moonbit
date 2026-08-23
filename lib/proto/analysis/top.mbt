@@ -29,9 +29,9 @@ pub impl @protobuf.Sized for Identifier with fn size_of(self) {
 ///|
 pub impl Default for Identifier with fn default() -> Identifier {
   Identifier::{
-    catalog: String::default(),
-    schema: String::default(),
-    name: String::default(),
+    catalog: Default::default(),
+    schema: Default::default(),
+    name: Default::default(),
   }
 }
 
@@ -80,7 +80,7 @@ pub impl @protobuf.Write for Identifier with fn write(
 
 ///|
 pub impl ToJson for Identifier with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.catalog != Default::default() {
     json["catalog"] = self.catalog.to_json()
   }
@@ -107,7 +107,7 @@ pub impl @json.FromJson for Identifier with fn from_json(
       ("catalog", value) => message.catalog = @json.from_json(value, path~)
       ("schema", value) => message.schema = @json.from_json(value, path~)
       ("name", value) => message.name = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -230,23 +230,23 @@ pub impl @protobuf.Sized for Column with fn size_of(self) {
 ///|
 pub impl Default for Column with fn default() -> Column {
   Column::{
-    name: String::default(),
-    original_name: String::default(),
-    data_type: String::default(),
-    not_null: Bool::default(),
-    unsigned: Bool::default(),
-    is_array: Bool::default(),
-    array_dims: Int::default(),
-    comment: String::default(),
-    length: Int::default(),
-    is_named_param: Bool::default(),
-    is_func_call: Bool::default(),
-    scope: String::default(),
+    name: Default::default(),
+    original_name: Default::default(),
+    data_type: Default::default(),
+    not_null: Default::default(),
+    unsigned: Default::default(),
+    is_array: Default::default(),
+    array_dims: Default::default(),
+    comment: Default::default(),
+    length: Default::default(),
+    is_named_param: Default::default(),
+    is_func_call: Default::default(),
+    scope: Default::default(),
     table: Identifier::default(),
-    table_alias: String::default(),
+    table_alias: Default::default(),
     type_: Identifier::default(),
     embed_table: Identifier::default(),
-    is_sqlc_slice: Bool::default(),
+    is_sqlc_slice: Default::default(),
   }
 }
 
@@ -373,7 +373,7 @@ pub impl @protobuf.Write for Column with fn write(
 
 ///|
 pub impl ToJson for Column with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.name != Default::default() {
     json["name"] = self.name.to_json()
   }
@@ -462,7 +462,7 @@ pub impl @json.FromJson for Column with fn from_json(
         message.embed_table = @json.from_json(value, path~)
       ("isSqlcSlice", value) =>
         message.is_sqlc_slice = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -571,7 +571,7 @@ pub impl @protobuf.Sized for Parameter with fn size_of(self) {
 
 ///|
 pub impl Default for Parameter with fn default() -> Parameter {
-  Parameter::{ number: Int::default(), column: Column::default() }
+  Parameter::{ number: Default::default(), column: Column::default() }
 }
 
 ///|
@@ -613,7 +613,7 @@ pub impl @protobuf.Write for Parameter with fn write(
 
 ///|
 pub impl ToJson for Parameter with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.number != Default::default() {
     json["number"] = self.number.to_json()
   }
@@ -636,7 +636,7 @@ pub impl @json.FromJson for Parameter with fn from_json(
     match (key, value) {
       ("number", value) => message.number = @json.from_json(value, path~)
       ("column", value) => message.column = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -749,7 +749,7 @@ pub impl @protobuf.Write for Analysis with fn write(
 
 ///|
 pub impl ToJson for Analysis with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.columns != Default::default() {
     json["columns"] = self.columns.to_json()
   }
@@ -774,7 +774,7 @@ pub impl @json.FromJson for Analysis with fn from_json(
         message.columns = value.map(v => @json.from_json(v, path~))
       ("params", Array(value)) =>
         message.params = value.map(v => @json.from_json(v, path~))
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message

@@ -3,6 +3,7 @@ plugins:
   - name: moonbit
     wasm:
       url: "file://../../bin/sqlc-gen-moonbit.wasm"
+      sha256: "192bbe972d61c3f90e81a3313d457f690301ddb26772c819eb00ab914b5e2a4c"
 sql:
   - engine: postgresql
     schema: "db/postgres/schema.sql"

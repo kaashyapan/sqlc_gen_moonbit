@@ -9,21 +9,22 @@ fn bytes_to_string(b : Bytes) -> String {
 
 // Query functions
 ///| GetUserById
-///  SELECT id, name, email, age, balance, is_active, bio, created_at FROM users WHERE id = ?
+///
+/// SELECT id, name, email, age, balance, is_active, bio, created_at FROM users WHERE id = ?
 pub fn get_user_by_id(db : @sqlite.Database, params : GetUserByIdParams) -> GetUserByIdRow? raise SqlError {
   let stmt = match db.prepare(get_user_by_id_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   if stmt.step() {
     let row : GetUserByIdRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -45,12 +46,12 @@ pub fn get_user_by_email(db : @sqlite.Database, params : GetUserByEmailParams) -
   stmt.bind(1, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.email))) |> ignore
   if stmt.step() {
     let row : GetUserByEmailRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -72,12 +73,12 @@ pub fn list_users(db : @sqlite.Database) -> Array[ListUsersRow] raise SqlError {
   let results : Array[ListUsersRow] = []
   while stmt.step() {
     let row : ListUsersRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -97,12 +98,12 @@ pub fn list_active_users(db : @sqlite.Database) -> Array[ListActiveUsersRow] rai
   let results : Array[ListActiveUsersRow] = []
   while stmt.step() {
     let row : ListActiveUsersRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -113,7 +114,8 @@ pub fn list_active_users(db : @sqlite.Database) -> Array[ListActiveUsersRow] rai
 }
 
 ///| CreateUser
-/// INSERT INTO users (name, email, age, balance, is_active, bio) VALUES (?, ?, ?, ?, ?, ?)
+/// INSERT INTO users (name, email, age, balance, is_active, bio)
+/// VALUES (?, ?, ?, ?, ?, ?)
 pub fn create_user(db : @sqlite.Database, params : CreateUserParams) -> Unit raise SqlError {
   let stmt = match db.prepare(create_user_sql) {
     Some(s) => s
@@ -121,16 +123,17 @@ pub fn create_user(db : @sqlite.Database, params : CreateUserParams) -> Unit rai
   }
   stmt.bind(1, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.name))) |> ignore
   stmt.bind(2, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.email))) |> ignore
-  stmt.bind(3, (match params.age { Some(v) => @sqlite.Int(v); None => @sqlite.Null })) |> ignore
+  stmt.bind(3, (match params.age { Some(v) => @sqlite.Int64(v); None => @sqlite.Null })) |> ignore
   stmt.bind(4, (match params.balance { Some(v) => @sqlite.Double(v); None => @sqlite.Null })) |> ignore
-  stmt.bind(5, @sqlite.Int(params.is_active)) |> ignore
+  stmt.bind(5, @sqlite.Int64(params.is_active)) |> ignore
   stmt.bind(6, (match params.bio { Some(v) => @sqlite.Text(@encoding.encode(@encoding.UTF8, v)); None => @sqlite.Null })) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
 }
 
 ///| CreateUserReturningId
-/// INSERT INTO users (name, email, age, balance, is_active, bio) VALUES (?, ?, ?, ?, ?, ?)
+/// INSERT INTO users (name, email, age, balance, is_active, bio)
+/// VALUES (?, ?, ?, ?, ?, ?)
 pub fn create_user_returning_id(db : @sqlite.Database, params : CreateUserReturningIdParams) -> Int64 raise SqlError {
   let stmt = match db.prepare(create_user_returning_id_sql) {
     Some(s) => s
@@ -138,9 +141,9 @@ pub fn create_user_returning_id(db : @sqlite.Database, params : CreateUserReturn
   }
   stmt.bind(1, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.name))) |> ignore
   stmt.bind(2, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.email))) |> ignore
-  stmt.bind(3, (match params.age { Some(v) => @sqlite.Int(v); None => @sqlite.Null })) |> ignore
+  stmt.bind(3, (match params.age { Some(v) => @sqlite.Int64(v); None => @sqlite.Null })) |> ignore
   stmt.bind(4, (match params.balance { Some(v) => @sqlite.Double(v); None => @sqlite.Null })) |> ignore
-  stmt.bind(5, @sqlite.Int(params.is_active)) |> ignore
+  stmt.bind(5, @sqlite.Int64(params.is_active)) |> ignore
   stmt.bind(6, (match params.bio { Some(v) => @sqlite.Text(@encoding.encode(@encoding.UTF8, v)); None => @sqlite.Null })) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
@@ -154,7 +157,7 @@ pub fn delete_user_by_id(db : @sqlite.Database, params : DeleteUserByIdParams) -
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
@@ -168,21 +171,22 @@ pub fn update_user_name(db : @sqlite.Database, params : UpdateUserNameParams) ->
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
   stmt.bind(1, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.name))) |> ignore
-  stmt.bind(2, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(2, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
 }
 
 ///| UpdateUserBio
-///  UPDATE users SET bio = ? WHERE id = ?
+///
+/// UPDATE users SET bio = ? WHERE id = ?
 pub fn update_user_bio(db : @sqlite.Database, params : UpdateUserBioParams) -> Int raise SqlError {
   let stmt = match db.prepare(update_user_bio_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
   stmt.bind(1, (match params.bio { Some(v) => @sqlite.Text(@encoding.encode(@encoding.UTF8, v)); None => @sqlite.Null })) |> ignore
-  stmt.bind(2, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(2, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
@@ -198,12 +202,12 @@ pub fn get_users_with_bio(db : @sqlite.Database) -> Array[GetUsersWithBioRow] ra
   let results : Array[GetUsersWithBioRow] = []
   while stmt.step() {
     let row : GetUsersWithBioRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -223,12 +227,12 @@ pub fn get_users_without_bio(db : @sqlite.Database) -> Array[GetUsersWithoutBioR
   let results : Array[GetUsersWithoutBioRow] = []
   while stmt.step() {
     let row : GetUsersWithoutBioRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -239,14 +243,15 @@ pub fn get_users_without_bio(db : @sqlite.Database) -> Array[GetUsersWithoutBioR
 }
 
 ///| UpdateUserBalance
-///  UPDATE users SET balance = ? WHERE id = ?
+///
+/// UPDATE users SET balance = ? WHERE id = ?
 pub fn update_user_balance(db : @sqlite.Database, params : UpdateUserBalanceParams) -> Int raise SqlError {
   let stmt = match db.prepare(update_user_balance_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
   stmt.bind(1, (match params.balance { Some(v) => @sqlite.Double(v); None => @sqlite.Null })) |> ignore
-  stmt.bind(2, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(2, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
@@ -262,12 +267,12 @@ pub fn get_users_with_positive_balance(db : @sqlite.Database) -> Array[GetUsersW
   let results : Array[GetUsersWithPositiveBalanceRow] = []
   while stmt.step() {
     let row : GetUsersWithPositiveBalanceRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -278,13 +283,14 @@ pub fn get_users_with_positive_balance(db : @sqlite.Database) -> Array[GetUsersW
 }
 
 ///| ActivateUser
-///  UPDATE users SET is_active = 1 WHERE id = ?
+///
+/// UPDATE users SET is_active = 1 WHERE id = ?
 pub fn activate_user(db : @sqlite.Database, params : ActivateUserParams) -> Int raise SqlError {
   let stmt = match db.prepare(activate_user_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
@@ -297,7 +303,7 @@ pub fn deactivate_user(db : @sqlite.Database, params : DeactivateUserParams) -> 
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
@@ -312,7 +318,7 @@ pub fn count_active_users(db : @sqlite.Database) -> CountActiveUsersRow? raise S
   }
   if stmt.step() {
     let row : CountActiveUsersRow = {
-      count: stmt.column_int(0),
+      count: stmt.column_int(0).to_int64(),
     }
     stmt.finalize()
     Some(row)
@@ -323,7 +329,8 @@ pub fn count_active_users(db : @sqlite.Database) -> CountActiveUsersRow? raise S
 }
 
 ///| SearchUsersByName
-///  SELECT id, name, email, age, balance, is_active, bio, created_at FROM users WHERE name LIKE ? ORDER BY name
+///
+/// SELECT id, name, email, age, balance, is_active, bio, created_at FROM users WHERE name LIKE ? ORDER BY name
 pub fn search_users_by_name(db : @sqlite.Database, params : SearchUsersByNameParams) -> Array[SearchUsersByNameRow] raise SqlError {
   let stmt = match db.prepare(search_users_by_name_sql) {
     Some(s) => s
@@ -333,12 +340,12 @@ pub fn search_users_by_name(db : @sqlite.Database, params : SearchUsersByNamePar
   let results : Array[SearchUsersByNameRow] = []
   while stmt.step() {
     let row : SearchUsersByNameRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -355,16 +362,16 @@ pub fn list_users_with_limit(db : @sqlite.Database, params : ListUsersWithLimitP
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.limit)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.limit)) |> ignore
   let results : Array[ListUsersWithLimitRow] = []
   while stmt.step() {
     let row : ListUsersWithLimitRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -383,7 +390,7 @@ pub fn get_user_count(db : @sqlite.Database) -> GetUserCountRow? raise SqlError 
   }
   if stmt.step() {
     let row : GetUserCountRow = {
-      count: stmt.column_int(0),
+      count: stmt.column_int(0).to_int64(),
     }
     stmt.finalize()
     Some(row)
@@ -394,31 +401,34 @@ pub fn get_user_count(db : @sqlite.Database) -> GetUserCountRow? raise SqlError 
 }
 
 ///| CreatePost
-///  INSERT INTO posts (author_id, title, content, is_published) VALUES (?, ?, ?, ?)
+///
+/// INSERT INTO posts (author_id, title, content, is_published)
+/// VALUES (?, ?, ?, ?)
 pub fn create_post(db : @sqlite.Database, params : CreatePostParams) -> Unit raise SqlError {
   let stmt = match db.prepare(create_post_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.author_id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.author_id)) |> ignore
   stmt.bind(2, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.title))) |> ignore
   stmt.bind(3, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.content))) |> ignore
-  stmt.bind(4, @sqlite.Int(params.is_published)) |> ignore
+  stmt.bind(4, @sqlite.Int64(params.is_published)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
 }
 
 ///| CreatePostReturningId
-/// INSERT INTO posts (author_id, title, content, is_published) VALUES (?, ?, ?, ?)
+/// INSERT INTO posts (author_id, title, content, is_published)
+/// VALUES (?, ?, ?, ?)
 pub fn create_post_returning_id(db : @sqlite.Database, params : CreatePostReturningIdParams) -> Int64 raise SqlError {
   let stmt = match db.prepare(create_post_returning_id_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.author_id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.author_id)) |> ignore
   stmt.bind(2, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.title))) |> ignore
   stmt.bind(3, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.content))) |> ignore
-  stmt.bind(4, @sqlite.Int(params.is_published)) |> ignore
+  stmt.bind(4, @sqlite.Int64(params.is_published)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.last_insert_rowid()
@@ -431,15 +441,15 @@ pub fn get_post_by_id(db : @sqlite.Database, params : GetPostByIdParams) -> GetP
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   if stmt.step() {
     let row : GetPostByIdRow = {
-      id: stmt.column_int(0),
-      author_id: stmt.column_int(1),
+      id: stmt.column_int(0).to_int64(),
+      author_id: stmt.column_int(1).to_int64(),
       title: bytes_to_string(stmt.column_text(2)),
       content: bytes_to_string(stmt.column_text(3)),
-      view_count: stmt.column_int(4),
-      is_published: stmt.column_int(5),
+      view_count: stmt.column_int(4).to_int64(),
+      is_published: stmt.column_int(5).to_int64(),
       published_at: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -458,16 +468,16 @@ pub fn list_posts_by_author(db : @sqlite.Database, params : ListPostsByAuthorPar
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.author_id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.author_id)) |> ignore
   let results : Array[ListPostsByAuthorRow] = []
   while stmt.step() {
     let row : ListPostsByAuthorRow = {
-      id: stmt.column_int(0),
-      author_id: stmt.column_int(1),
+      id: stmt.column_int(0).to_int64(),
+      author_id: stmt.column_int(1).to_int64(),
       title: bytes_to_string(stmt.column_text(2)),
       content: bytes_to_string(stmt.column_text(3)),
-      view_count: stmt.column_int(4),
-      is_published: stmt.column_int(5),
+      view_count: stmt.column_int(4).to_int64(),
+      is_published: stmt.column_int(5).to_int64(),
       published_at: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -484,7 +494,7 @@ pub fn publish_post(db : @sqlite.Database, params : PublishPostParams) -> Int ra
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
@@ -497,7 +507,7 @@ pub fn delete_post(db : @sqlite.Database, params : DeletePostParams) -> Int rais
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
@@ -510,30 +520,37 @@ pub fn increment_view_count(db : @sqlite.Database, params : IncrementViewCountPa
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
 }
 
 ///| GetPostWithAuthor
-///  SELECT   p.id, p.title, p.content, p.view_count, p.is_published,   p.published_at, p.created_at,   u.id as author_id, u.name as author_name, u.email as author_email FROM posts p INNER JOIN users u ON p.author_id = u.id WHERE p.id = ?
+///
+/// SELECT
+///   p.id, p.title, p.content, p.view_count, p.is_published,
+///   p.published_at, p.created_at,
+///   u.id as author_id, u.name as author_name, u.email as author_email
+/// FROM posts p
+/// INNER JOIN users u ON p.author_id = u.id
+/// WHERE p.id = ?
 pub fn get_post_with_author(db : @sqlite.Database, params : GetPostWithAuthorParams) -> GetPostWithAuthorRow? raise SqlError {
   let stmt = match db.prepare(get_post_with_author_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   if stmt.step() {
     let row : GetPostWithAuthorRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       title: bytes_to_string(stmt.column_text(1)),
       content: bytes_to_string(stmt.column_text(2)),
-      view_count: stmt.column_int(3),
-      is_published: stmt.column_int(4),
+      view_count: stmt.column_int(3).to_int64(),
+      is_published: stmt.column_int(4).to_int64(),
       published_at: (match stmt.column(5) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(5))) }),
       created_at: bytes_to_string(stmt.column_text(6)),
-      author_id: stmt.column_int(7),
+      author_id: stmt.column_int(7).to_int64(),
       author_name: bytes_to_string(stmt.column_text(8)),
       author_email: bytes_to_string(stmt.column_text(9)),
     }
@@ -546,7 +563,12 @@ pub fn get_post_with_author(db : @sqlite.Database, params : GetPostWithAuthorPar
 }
 
 ///| ListPostsWithAuthors
-/// SELECT   p.id, p.title, p.view_count, p.is_published, p.created_at,   u.id as author_id, u.name as author_name FROM posts p INNER JOIN users u ON p.author_id = u.id ORDER BY p.created_at DESC
+/// SELECT
+///   p.id, p.title, p.view_count, p.is_published, p.created_at,
+///   u.id as author_id, u.name as author_name
+/// FROM posts p
+/// INNER JOIN users u ON p.author_id = u.id
+/// ORDER BY p.created_at DESC
 pub fn list_posts_with_authors(db : @sqlite.Database) -> Array[ListPostsWithAuthorsRow] raise SqlError {
   let stmt = match db.prepare(list_posts_with_authors_sql) {
     Some(s) => s
@@ -555,12 +577,12 @@ pub fn list_posts_with_authors(db : @sqlite.Database) -> Array[ListPostsWithAuth
   let results : Array[ListPostsWithAuthorsRow] = []
   while stmt.step() {
     let row : ListPostsWithAuthorsRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       title: bytes_to_string(stmt.column_text(1)),
-      view_count: stmt.column_int(2),
-      is_published: stmt.column_int(3),
+      view_count: stmt.column_int(2).to_int64(),
+      is_published: stmt.column_int(3).to_int64(),
       created_at: bytes_to_string(stmt.column_text(4)),
-      author_id: stmt.column_int(5),
+      author_id: stmt.column_int(5).to_int64(),
       author_name: bytes_to_string(stmt.column_text(6)),
     }
     results.push(row)
@@ -570,16 +592,17 @@ pub fn list_posts_with_authors(db : @sqlite.Database) -> Array[ListPostsWithAuth
 }
 
 ///| GetPostCountByAuthor
-///  SELECT COUNT(*) as post_count FROM posts WHERE author_id = ?
+///
+/// SELECT COUNT(*) as post_count FROM posts WHERE author_id = ?
 pub fn get_post_count_by_author(db : @sqlite.Database, params : GetPostCountByAuthorParams) -> GetPostCountByAuthorRow? raise SqlError {
   let stmt = match db.prepare(get_post_count_by_author_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.author_id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.author_id)) |> ignore
   if stmt.step() {
     let row : GetPostCountByAuthorRow = {
-      post_count: stmt.column_int(0),
+      post_count: stmt.column_int(0).to_int64(),
     }
     stmt.finalize()
     Some(row)
@@ -590,17 +613,20 @@ pub fn get_post_count_by_author(db : @sqlite.Database, params : GetPostCountByAu
 }
 
 ///| GetAuthorStats
-/// SELECT   COUNT(*) as post_count,   COALESCE(SUM(view_count), 0) as total_views FROM posts WHERE author_id = ?
+/// SELECT
+///   COUNT(*) as post_count,
+///   COALESCE(SUM(view_count), 0) as total_views
+/// FROM posts WHERE author_id = ?
 pub fn get_author_stats(db : @sqlite.Database, params : GetAuthorStatsParams) -> GetAuthorStatsRow? raise SqlError {
   let stmt = match db.prepare(get_author_stats_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.author_id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.author_id)) |> ignore
   if stmt.step() {
     let row : GetAuthorStatsRow = {
-      post_count: stmt.column_int(0),
-      total_views: (match stmt.column(1) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(1))) }),
+      post_count: stmt.column_int(0).to_int64(),
+      total_views: stmt.column_int(1).to_int64(),
     }
     stmt.finalize()
     Some(row)
@@ -611,7 +637,8 @@ pub fn get_author_stats(db : @sqlite.Database, params : GetAuthorStatsParams) ->
 }
 
 ///| CreateTag
-///  INSERT INTO tags (name) VALUES (?)
+///
+/// INSERT INTO tags (name) VALUES (?)
 pub fn create_tag(db : @sqlite.Database, params : CreateTagParams) -> Unit raise SqlError {
   let stmt = match db.prepare(create_tag_sql) {
     Some(s) => s
@@ -645,7 +672,7 @@ pub fn get_tag_by_name(db : @sqlite.Database, params : GetTagByNameParams) -> Ge
   stmt.bind(1, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.name))) |> ignore
   if stmt.step() {
     let row : GetTagByNameRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
     }
     stmt.finalize()
@@ -666,7 +693,7 @@ pub fn list_tags(db : @sqlite.Database) -> Array[ListTagsRow] raise SqlError {
   let results : Array[ListTagsRow] = []
   while stmt.step() {
     let row : ListTagsRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
     }
     results.push(row)
@@ -682,21 +709,22 @@ pub fn delete_tag(db : @sqlite.Database, params : DeleteTagParams) -> Int raise 
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
 }
 
 ///| AddTagToPost
-///  INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)
+///
+/// INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)
 pub fn add_tag_to_post(db : @sqlite.Database, params : AddTagToPostParams) -> Unit raise SqlError {
   let stmt = match db.prepare(add_tag_to_post_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.post_id)) |> ignore
-  stmt.bind(2, @sqlite.Int(params.tag_id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.post_id)) |> ignore
+  stmt.bind(2, @sqlite.Int64(params.tag_id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
 }
@@ -708,25 +736,29 @@ pub fn remove_tag_from_post(db : @sqlite.Database, params : RemoveTagFromPostPar
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.post_id)) |> ignore
-  stmt.bind(2, @sqlite.Int(params.tag_id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.post_id)) |> ignore
+  stmt.bind(2, @sqlite.Int64(params.tag_id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
 }
 
 ///| ListTagsForPost
-/// SELECT t.id, t.name FROM tags t INNER JOIN post_tags pt ON t.id = pt.tag_id WHERE pt.post_id = ? ORDER BY t.name
+/// SELECT t.id, t.name
+/// FROM tags t
+/// INNER JOIN post_tags pt ON t.id = pt.tag_id
+/// WHERE pt.post_id = ?
+/// ORDER BY t.name
 pub fn list_tags_for_post(db : @sqlite.Database, params : ListTagsForPostParams) -> Array[ListTagsForPostRow] raise SqlError {
   let stmt = match db.prepare(list_tags_for_post_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.post_id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.post_id)) |> ignore
   let results : Array[ListTagsForPostRow] = []
   while stmt.step() {
     let row : ListTagsForPostRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
     }
     results.push(row)
@@ -742,10 +774,10 @@ pub fn get_tag_count_for_post(db : @sqlite.Database, params : GetTagCountForPost
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.post_id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.post_id)) |> ignore
   if stmt.step() {
     let row : GetTagCountForPostRow = {
-      tag_count: stmt.column_int(0),
+      tag_count: stmt.column_int(0).to_int64(),
     }
     stmt.finalize()
     Some(row)
@@ -756,23 +788,24 @@ pub fn get_tag_count_for_post(db : @sqlite.Database, params : GetTagCountForPost
 }
 
 ///| ListUsersPaginated
-///  SELECT id, name, email, age, balance, is_active, bio, created_at FROM users WHERE id > ? ORDER BY id LIMIT ?
+///
+/// SELECT id, name, email, age, balance, is_active, bio, created_at FROM users WHERE id > ? ORDER BY id LIMIT ?
 pub fn list_users_paginated(db : @sqlite.Database, params : ListUsersPaginatedParams) -> Array[ListUsersPaginatedRow] raise SqlError {
   let stmt = match db.prepare(list_users_paginated_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
-  stmt.bind(2, @sqlite.Int(params.limit)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
+  stmt.bind(2, @sqlite.Int64(params.limit)) |> ignore
   let results : Array[ListUsersPaginatedRow] = []
   while stmt.step() {
     let row : ListUsersPaginatedRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
-      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3)) }),
+      age: (match stmt.column(3) { @sqlite.Null => None; _ => Some(stmt.column_int(3).to_int64()) }),
       balance: (match stmt.column(4) { @sqlite.Null => None; _ => Some((match stmt.column(4) { @sqlite.Double(v) => v; @sqlite.Int(v) => v.to_double(); _ => 0.0 })) }),
-      is_active: stmt.column_int(5),
+      is_active: stmt.column_int(5).to_int64(),
       bio: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -789,18 +822,18 @@ pub fn list_posts_by_author_paginated(db : @sqlite.Database, params : ListPostsB
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.author_id)) |> ignore
-  stmt.bind(2, @sqlite.Int(params.id)) |> ignore
-  stmt.bind(3, @sqlite.Int(params.limit)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.author_id)) |> ignore
+  stmt.bind(2, @sqlite.Int64(params.id)) |> ignore
+  stmt.bind(3, @sqlite.Int64(params.limit)) |> ignore
   let results : Array[ListPostsByAuthorPaginatedRow] = []
   while stmt.step() {
     let row : ListPostsByAuthorPaginatedRow = {
-      id: stmt.column_int(0),
-      author_id: stmt.column_int(1),
+      id: stmt.column_int(0).to_int64(),
+      author_id: stmt.column_int(1).to_int64(),
       title: bytes_to_string(stmt.column_text(2)),
       content: bytes_to_string(stmt.column_text(3)),
-      view_count: stmt.column_int(4),
-      is_published: stmt.column_int(5),
+      view_count: stmt.column_int(4).to_int64(),
+      is_published: stmt.column_int(5).to_int64(),
       published_at: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -811,23 +844,30 @@ pub fn list_posts_by_author_paginated(db : @sqlite.Database, params : ListPostsB
 }
 
 ///| ListPostsWithAuthorsPaginated
-/// SELECT   p.id, p.title, p.view_count, p.is_published, p.created_at,   u.id as author_id, u.name as author_name FROM posts p INNER JOIN users u ON p.author_id = u.id WHERE p.id > ? ORDER BY p.id LIMIT ?
+/// SELECT
+///   p.id, p.title, p.view_count, p.is_published, p.created_at,
+///   u.id as author_id, u.name as author_name
+/// FROM posts p
+/// INNER JOIN users u ON p.author_id = u.id
+/// WHERE p.id > ?
+/// ORDER BY p.id
+/// LIMIT ?
 pub fn list_posts_with_authors_paginated(db : @sqlite.Database, params : ListPostsWithAuthorsPaginatedParams) -> Array[ListPostsWithAuthorsPaginatedRow] raise SqlError {
   let stmt = match db.prepare(list_posts_with_authors_paginated_sql) {
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
-  stmt.bind(2, @sqlite.Int(params.limit)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
+  stmt.bind(2, @sqlite.Int64(params.limit)) |> ignore
   let results : Array[ListPostsWithAuthorsPaginatedRow] = []
   while stmt.step() {
     let row : ListPostsWithAuthorsPaginatedRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       title: bytes_to_string(stmt.column_text(1)),
-      view_count: stmt.column_int(2),
-      is_published: stmt.column_int(3),
+      view_count: stmt.column_int(2).to_int64(),
+      is_published: stmt.column_int(3).to_int64(),
       created_at: bytes_to_string(stmt.column_text(4)),
-      author_id: stmt.column_int(5),
+      author_id: stmt.column_int(5).to_int64(),
       author_name: bytes_to_string(stmt.column_text(6)),
     }
     results.push(row)
@@ -843,17 +883,17 @@ pub fn list_published_posts_paginated(db : @sqlite.Database, params : ListPublis
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
-  stmt.bind(2, @sqlite.Int(params.limit)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
+  stmt.bind(2, @sqlite.Int64(params.limit)) |> ignore
   let results : Array[ListPublishedPostsPaginatedRow] = []
   while stmt.step() {
     let row : ListPublishedPostsPaginatedRow = {
-      id: stmt.column_int(0),
-      author_id: stmt.column_int(1),
+      id: stmt.column_int(0).to_int64(),
+      author_id: stmt.column_int(1).to_int64(),
       title: bytes_to_string(stmt.column_text(2)),
       content: bytes_to_string(stmt.column_text(3)),
-      view_count: stmt.column_int(4),
-      is_published: stmt.column_int(5),
+      view_count: stmt.column_int(4).to_int64(),
+      is_published: stmt.column_int(5).to_int64(),
       published_at: (match stmt.column(6) { @sqlite.Null => None; _ => Some(bytes_to_string(stmt.column_text(6))) }),
       created_at: bytes_to_string(stmt.column_text(7)),
     }
@@ -862,4 +902,3 @@ pub fn list_published_posts_paginated(db : @sqlite.Database, params : ListPublis
   stmt.finalize()
   results
 }
-

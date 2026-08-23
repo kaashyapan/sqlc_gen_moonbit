@@ -51,6 +51,15 @@ generate: build
     cd examples/postgres_js && sqlc generate
     cd examples/mysql_js && sqlc generate
     cd examples/postgres_native && sqlc generate
+    cd tests/sqlite_native && sqlc generate
+    cd tests/sqlite_js && sqlc generate
+    cd tests/d1 && sqlc generate
+
+# Regenerate protobuf bindings and normalize them for the current compiler.
+# Requires buf and bin/protoc-gen-mbt.
+generate-proto:
+    buf generate --template buf.gen.yaml vendor/sqlc/protos
+    tools/normalize-generated-proto.sh
 
 # D1 tasks
 # action: build|dev|migrate-diff|migrate-apply|migrate-apply-remote|migrate-status|migrate-lint|migrate-hash
@@ -82,6 +91,7 @@ info:
 
 # Check all MoonBit code
 check:
+    moon check
     moon check --target native ./cmd/native
     moon check --target wasm ./cmd/wasm
     cd examples/sqlite_native && moon check --target native

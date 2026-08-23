@@ -22,7 +22,7 @@ pub impl @protobuf.Sized for File with fn size_of(self) {
 
 ///|
 pub impl Default for File with fn default() -> File {
-  File::{ name: String::default(), contents: Bytes::default() }
+  File::{ name: Default::default(), contents: Default::default() }
 }
 
 ///|
@@ -63,7 +63,7 @@ pub impl @protobuf.Write for File with fn write(
 
 ///|
 pub impl ToJson for File with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.name != Default::default() {
     json["name"] = self.name.to_json()
   }
@@ -87,7 +87,7 @@ pub impl @json.FromJson for File with fn from_json(
       ("name", value) => message.name = @json.from_json(value, path~)
       ("contents", String(value)) =>
         message.contents = @protobuf.base64_decode(value)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -165,8 +165,8 @@ pub impl @protobuf.Sized for Settings with fn size_of(self) {
 ///|
 pub impl Default for Settings with fn default() -> Settings {
   Settings::{
-    version: String::default(),
-    engine: String::default(),
+    version: Default::default(),
+    engine: Default::default(),
     schema: [],
     queries: [],
     codegen: Codegen::default(),
@@ -231,7 +231,7 @@ pub impl @protobuf.Write for Settings with fn write(
 
 ///|
 pub impl ToJson for Settings with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.version != Default::default() {
     json["version"] = self.version.to_json()
   }
@@ -268,7 +268,7 @@ pub impl @json.FromJson for Settings with fn from_json(
       ("queries", Array(value)) =>
         message.queries = value.map(v => @json.from_json(v, path~))
       ("codegen", value) => message.codegen = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -338,7 +338,7 @@ pub impl @protobuf.Sized for Codegen_Process with fn size_of(self) {
 
 ///|
 pub impl Default for Codegen_Process with fn default() -> Codegen_Process {
-  Codegen_Process::{ cmd: String::default() }
+  Codegen_Process::{ cmd: Default::default() }
 }
 
 ///|
@@ -376,7 +376,7 @@ pub impl @protobuf.Write for Codegen_Process with fn write(
 
 ///|
 pub impl ToJson for Codegen_Process with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.cmd != Default::default() {
     json["cmd"] = self.cmd.to_json()
   }
@@ -397,7 +397,7 @@ pub impl @json.FromJson for Codegen_Process with fn from_json(
   for key, value in obj {
     match (key, value) {
       ("cmd", value) => message.cmd = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -455,7 +455,7 @@ pub impl @protobuf.Sized for Codegen_WASM with fn size_of(self) {
 
 ///|
 pub impl Default for Codegen_WASM with fn default() -> Codegen_WASM {
-  Codegen_WASM::{ url: String::default(), sha256: String::default() }
+  Codegen_WASM::{ url: Default::default(), sha256: Default::default() }
 }
 
 ///|
@@ -496,7 +496,7 @@ pub impl @protobuf.Write for Codegen_WASM with fn write(
 
 ///|
 pub impl ToJson for Codegen_WASM with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.url != Default::default() {
     json["url"] = self.url.to_json()
   }
@@ -519,7 +519,7 @@ pub impl @json.FromJson for Codegen_WASM with fn from_json(
     match (key, value) {
       ("url", value) => message.url = @json.from_json(value, path~)
       ("sha256", value) => message.sha256 = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -604,9 +604,9 @@ pub impl @protobuf.Sized for Codegen with fn size_of(self) {
 ///|
 pub impl Default for Codegen with fn default() -> Codegen {
   Codegen::{
-    out: String::default(),
-    plugin: String::default(),
-    options: Bytes::default(),
+    out: Default::default(),
+    plugin: Default::default(),
+    options: Default::default(),
     env: [],
     process: Codegen_Process::default(),
     wasm: Codegen_WASM::default(),
@@ -675,7 +675,7 @@ pub impl @protobuf.Write for Codegen with fn write(
 
 ///|
 pub impl ToJson for Codegen with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.out != Default::default() {
     json["out"] = self.out.to_json()
   }
@@ -716,7 +716,7 @@ pub impl @json.FromJson for Codegen with fn from_json(
         message.env = value.map(v => @json.from_json(v, path~))
       ("process", value) => message.process = @json.from_json(value, path~)
       ("wasm", value) => message.wasm = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -808,9 +808,9 @@ pub impl @protobuf.Sized for Catalog with fn size_of(self) {
 ///|
 pub impl Default for Catalog with fn default() -> Catalog {
   Catalog::{
-    comment: String::default(),
-    default_schema: String::default(),
-    name: String::default(),
+    comment: Default::default(),
+    default_schema: Default::default(),
+    name: Default::default(),
     schemas: [],
   }
 }
@@ -868,7 +868,7 @@ pub impl @protobuf.Write for Catalog with fn write(
 
 ///|
 pub impl ToJson for Catalog with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.comment != Default::default() {
     json["comment"] = self.comment.to_json()
   }
@@ -901,7 +901,7 @@ pub impl @json.FromJson for Catalog with fn from_json(
       ("name", value) => message.name = @json.from_json(value, path~)
       ("schemas", Array(value)) =>
         message.schemas = value.map(v => @json.from_json(v, path~))
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -988,8 +988,8 @@ pub impl @protobuf.Sized for Schema with fn size_of(self) {
 ///|
 pub impl Default for Schema with fn default() -> Schema {
   Schema::{
-    comment: String::default(),
-    name: String::default(),
+    comment: Default::default(),
+    name: Default::default(),
     tables: [],
     enums: [],
     composite_types: [],
@@ -1061,7 +1061,7 @@ pub impl @protobuf.Write for Schema with fn write(
 
 ///|
 pub impl ToJson for Schema with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.comment != Default::default() {
     json["comment"] = self.comment.to_json()
   }
@@ -1099,7 +1099,7 @@ pub impl @json.FromJson for Schema with fn from_json(
         message.enums = value.map(v => @json.from_json(v, path~))
       ("compositeTypes", Array(value)) =>
         message.composite_types = value.map(v => @json.from_json(v, path~))
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -1183,7 +1183,7 @@ pub impl @protobuf.Sized for CompositeType with fn size_of(self) {
 
 ///|
 pub impl Default for CompositeType with fn default() -> CompositeType {
-  CompositeType::{ name: String::default(), comment: String::default() }
+  CompositeType::{ name: Default::default(), comment: Default::default() }
 }
 
 ///|
@@ -1224,7 +1224,7 @@ pub impl @protobuf.Write for CompositeType with fn write(
 
 ///|
 pub impl ToJson for CompositeType with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.name != Default::default() {
     json["name"] = self.name.to_json()
   }
@@ -1247,7 +1247,7 @@ pub impl @json.FromJson for CompositeType with fn from_json(
     match (key, value) {
       ("name", value) => message.name = @json.from_json(value, path~)
       ("comment", value) => message.comment = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -1313,7 +1313,7 @@ pub impl @protobuf.Sized for Enum with fn size_of(self) {
 
 ///|
 pub impl Default for Enum with fn default() -> Enum {
-  Enum::{ name: String::default(), vals: [], comment: String::default() }
+  Enum::{ name: Default::default(), vals: [], comment: Default::default() }
 }
 
 ///|
@@ -1359,7 +1359,7 @@ pub impl @protobuf.Write for Enum with fn write(
 
 ///|
 pub impl ToJson for Enum with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.name != Default::default() {
     json["name"] = self.name.to_json()
   }
@@ -1387,7 +1387,7 @@ pub impl @json.FromJson for Enum with fn from_json(
       ("vals", Array(value)) =>
         message.vals = value.map(v => @json.from_json(v, path~))
       ("comment", value) => message.comment = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -1458,7 +1458,11 @@ pub impl @protobuf.Sized for Table with fn size_of(self) {
 
 ///|
 pub impl Default for Table with fn default() -> Table {
-  Table::{ rel: Identifier::default(), columns: [], comment: String::default() }
+  Table::{
+    rel: Identifier::default(),
+    columns: [],
+    comment: Default::default(),
+  }
 }
 
 ///|
@@ -1511,7 +1515,7 @@ pub impl @protobuf.Write for Table with fn write(
 
 ///|
 pub impl ToJson for Table with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.rel != Default::default() {
     json["rel"] = self.rel.to_json()
   }
@@ -1539,7 +1543,7 @@ pub impl @json.FromJson for Table with fn from_json(
       ("columns", Array(value)) =>
         message.columns = value.map(v => @json.from_json(v, path~))
       ("comment", value) => message.comment = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -1616,9 +1620,9 @@ pub impl @protobuf.Sized for Identifier with fn size_of(self) {
 ///|
 pub impl Default for Identifier with fn default() -> Identifier {
   Identifier::{
-    catalog: String::default(),
-    schema: String::default(),
-    name: String::default(),
+    catalog: Default::default(),
+    schema: Default::default(),
+    name: Default::default(),
   }
 }
 
@@ -1667,7 +1671,7 @@ pub impl @protobuf.Write for Identifier with fn write(
 
 ///|
 pub impl ToJson for Identifier with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.catalog != Default::default() {
     json["catalog"] = self.catalog.to_json()
   }
@@ -1694,7 +1698,7 @@ pub impl @json.FromJson for Identifier with fn from_json(
       ("catalog", value) => message.catalog = @json.from_json(value, path~)
       ("schema", value) => message.schema = @json.from_json(value, path~)
       ("name", value) => message.name = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -1811,22 +1815,22 @@ pub impl @protobuf.Sized for Column with fn size_of(self) {
 ///|
 pub impl Default for Column with fn default() -> Column {
   Column::{
-    name: String::default(),
-    not_null: Bool::default(),
-    is_array: Bool::default(),
-    comment: String::default(),
-    length: Int::default(),
-    is_named_param: Bool::default(),
-    is_func_call: Bool::default(),
-    scope: String::default(),
+    name: Default::default(),
+    not_null: Default::default(),
+    is_array: Default::default(),
+    comment: Default::default(),
+    length: Default::default(),
+    is_named_param: Default::default(),
+    is_func_call: Default::default(),
+    scope: Default::default(),
     table: Identifier::default(),
-    table_alias: String::default(),
+    table_alias: Default::default(),
     type_: Identifier::default(),
-    is_sqlc_slice: Bool::default(),
+    is_sqlc_slice: Default::default(),
     embed_table: Identifier::default(),
-    original_name: String::default(),
-    unsigned: Bool::default(),
-    array_dims: Int::default(),
+    original_name: Default::default(),
+    unsigned: Default::default(),
+    array_dims: Default::default(),
   }
 }
 
@@ -1948,7 +1952,7 @@ pub impl @protobuf.Write for Column with fn write(
 
 ///|
 pub impl ToJson for Column with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.name != Default::default() {
     json["name"] = self.name.to_json()
   }
@@ -2033,7 +2037,7 @@ pub impl @json.FromJson for Column with fn from_json(
         message.original_name = @json.from_json(value, path~)
       ("unsigned", value) => message.unsigned = @json.from_json(value, path~)
       ("arrayDims", value) => message.array_dims = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -2177,13 +2181,13 @@ pub impl @protobuf.Sized for Query with fn size_of(self) {
 ///|
 pub impl Default for Query with fn default() -> Query {
   Query::{
-    text: String::default(),
-    name: String::default(),
-    cmd: String::default(),
+    text: Default::default(),
+    name: Default::default(),
+    cmd: Default::default(),
     columns: [],
     params: [],
     comments: [],
-    filename: String::default(),
+    filename: Default::default(),
     insert_into_table: Identifier::default(),
   }
 }
@@ -2275,7 +2279,7 @@ pub impl @protobuf.Write for Query with fn write(
 
 ///|
 pub impl ToJson for Query with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.text != Default::default() {
     json["text"] = self.text.to_json()
   }
@@ -2326,7 +2330,7 @@ pub impl @json.FromJson for Query with fn from_json(
       ("filename", value) => message.filename = @json.from_json(value, path~)
       ("insert_into_table", value) =>
         message.insert_into_table = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -2417,7 +2421,7 @@ pub impl @protobuf.Sized for Parameter with fn size_of(self) {
 
 ///|
 pub impl Default for Parameter with fn default() -> Parameter {
-  Parameter::{ number: Int::default(), column: Column::default() }
+  Parameter::{ number: Default::default(), column: Column::default() }
 }
 
 ///|
@@ -2459,7 +2463,7 @@ pub impl @protobuf.Write for Parameter with fn write(
 
 ///|
 pub impl ToJson for Parameter with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.number != Default::default() {
     json["number"] = self.number.to_json()
   }
@@ -2482,7 +2486,7 @@ pub impl @json.FromJson for Parameter with fn from_json(
     match (key, value) {
       ("number", value) => message.number = @json.from_json(value, path~)
       ("column", value) => message.column = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -2572,9 +2576,9 @@ pub impl Default for GenerateRequest with fn default() -> GenerateRequest {
     settings: Settings::default(),
     catalog: Catalog::default(),
     queries: [],
-    sqlc_version: String::default(),
-    plugin_options: Bytes::default(),
-    global_options: Bytes::default(),
+    sqlc_version: Default::default(),
+    plugin_options: Default::default(),
+    global_options: Default::default(),
   }
 }
 
@@ -2647,7 +2651,7 @@ pub impl @protobuf.Write for GenerateRequest with fn write(
 
 ///|
 pub impl ToJson for GenerateRequest with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.settings != Default::default() {
     json["settings"] = self.settings.to_json()
   }
@@ -2692,7 +2696,7 @@ pub impl @json.FromJson for GenerateRequest with fn from_json(
         message.plugin_options = @protobuf.base64_decode(value)
       ("global_options", String(value)) =>
         message.global_options = @protobuf.base64_decode(value)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -2807,7 +2811,7 @@ pub impl @protobuf.Write for GenerateResponse with fn write(
 
 ///|
 pub impl ToJson for GenerateResponse with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.files != Default::default() {
     json["files"] = self.files.to_json()
   }
@@ -2829,7 +2833,7 @@ pub impl @json.FromJson for GenerateResponse with fn from_json(
     match (key, value) {
       ("files", Array(value)) =>
         message.files = value.map(v => @json.from_json(v, path~))
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message

@@ -37,6 +37,8 @@ pub fn generate_json_schema(@plugin.GenerateRequest) -> String
 
 pub fn generate_params_struct(StringBuilder, String, Array[@plugin.Parameter], Array[TypeOverride], @plugin.Query) -> Unit
 
+pub fn generate_postgres_result_struct(StringBuilder, String, Array[@plugin.Column], Array[TypeOverride], @plugin.Query) -> Unit
+
 pub fn generate_queries_d1(@plugin.GenerateRequest, Array[TypeOverride]) -> String
 
 pub fn generate_queries_mysql_js(@plugin.GenerateRequest, Array[TypeOverride]) -> String
@@ -165,4 +167,3 @@ pub trait BackendCodeGen {
   fn generate_execrows(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
   fn generate_execlastid(Self, StringBuilder, @plugin.Query, Array[TypeOverride]) -> Unit
 }
-

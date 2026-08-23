@@ -3,7 +3,7 @@
 ///|
 test "sqlite backend info" {
   let backend = SqliteBackend::new()
-  let info = backend.info()
+  let info = BackendCodeGen::info(backend)
   assert_eq(info.name, "sqlite")
   assert_eq(info.db_type, "@sqlite.Sqlite3")
   assert_eq(info.error_type, Some("SqlError"))
@@ -33,7 +33,7 @@ test "sqlite backend param bind expr - integer" {
     unsigned: false,
     array_dims: 0,
   }
-  let expr = backend.param_bind_expr(col, 1, "params.id")
+  let expr = BackendCodeGen::param_bind_expr(backend, col, 1, "params.id")
   assert_true(expr.contains("sqlite_bind_int64"))
   assert_true(expr.contains("params.id"))
 }
@@ -59,7 +59,7 @@ test "sqlite backend column read expr - text" {
     unsigned: false,
     array_dims: 0,
   }
-  let expr = backend.column_read_expr(col, 0, "stmt")
+  let expr = BackendCodeGen::column_read_expr(backend, col, 0, "stmt")
   assert_true(expr.contains("bytes_to_string"))
   assert_true(expr.contains("sqlite_column_text"))
 }
@@ -155,7 +155,7 @@ test "backend_get_return_type with result wrapper" {
 ///|
 test "d1 backend info" {
   let backend = D1Backend::new()
-  let info = backend.info()
+  let info = BackendCodeGen::info(backend)
   assert_eq(info.name, "d1")
   assert_eq(info.db_type, "@cloudflare.D1Database")
   assert_eq(info.error_type, Some("@cloudflare.D1Error"))
@@ -185,7 +185,7 @@ test "d1 backend param bind expr - nullable" {
     unsigned: false,
     array_dims: 0,
   }
-  let expr = backend.param_bind_expr(col, 1, "params.email")
+  let expr = BackendCodeGen::param_bind_expr(backend, col, 1, "params.email")
   assert_true(expr.contains("match"))
   assert_true(expr.contains("@core.null()"))
 }
@@ -193,7 +193,7 @@ test "d1 backend param bind expr - nullable" {
 ///|
 test "sqlite_js backend info" {
   let backend = SqliteJsBackend::new()
-  let info = backend.info()
+  let info = BackendCodeGen::info(backend)
   assert_eq(info.name, "sqlite_js")
   assert_eq(info.db_type, "@sqlite.Database")
   assert_eq(info.error_type, Some("SqlError"))
@@ -204,7 +204,7 @@ test "sqlite_js backend info" {
 ///|
 test "postgres backend info" {
   let backend = PostgresBackend::new()
-  let info = backend.info()
+  let info = BackendCodeGen::info(backend)
   assert_eq(info.name, "postgres")
   assert_eq(info.db_type, "@postgres.Connection")
   assert_eq(info.error_type, Some("@postgres.PgError"))

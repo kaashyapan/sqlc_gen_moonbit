@@ -15,10 +15,10 @@ pub fn get_user(db : @sqlite.Database, params : GetUserParams) -> GetUserRow? ra
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   if stmt.step() {
     let row : GetUserRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
       created_at: bytes_to_string(stmt.column_text(3)),
@@ -41,7 +41,7 @@ pub fn list_users(db : @sqlite.Database) -> Array[ListUsersRow] raise SqlError {
   let results : Array[ListUsersRow] = []
   while stmt.step() {
     let row : ListUsersRow = {
-      id: stmt.column_int(0),
+      id: stmt.column_int(0).to_int64(),
       name: bytes_to_string(stmt.column_text(1)),
       email: bytes_to_string(stmt.column_text(2)),
       created_at: bytes_to_string(stmt.column_text(3)),
@@ -75,7 +75,7 @@ pub fn update_user(db : @sqlite.Database, params : UpdateUserParams) -> Int rais
   }
   stmt.bind(1, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.name))) |> ignore
   stmt.bind(2, @sqlite.Text(@encoding.encode(@encoding.UTF8, params.email))) |> ignore
-  stmt.bind(3, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(3, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
@@ -88,9 +88,8 @@ pub fn delete_user(db : @sqlite.Database, params : DeleteUserParams) -> Int rais
     Some(s) => s
     None => raise SqlError(bytes_to_string(db.errmsg()))
   }
-  stmt.bind(1, @sqlite.Int(params.id)) |> ignore
+  stmt.bind(1, @sqlite.Int64(params.id)) |> ignore
   stmt.execute() |> ignore
   stmt.finalize()
   db.changes()
 }
-

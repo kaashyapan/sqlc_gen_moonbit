@@ -12,7 +12,7 @@ pub impl @protobuf.Sized for Parameter with fn size_of(self) {
 
 ///|
 pub impl Default for Parameter with fn default() -> Parameter {
-  Parameter::{ number: Int::default() }
+  Parameter::{ number: Default::default() }
 }
 
 ///|
@@ -50,7 +50,7 @@ pub impl @protobuf.Write for Parameter with fn write(
 
 ///|
 pub impl ToJson for Parameter with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.number != Default::default() {
     json["number"] = self.number.to_json()
   }
@@ -69,7 +69,7 @@ pub impl @json.FromJson for Parameter with fn from_json(
   for key, value in obj {
     match (key, value) {
       ("number", value) => message.number = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -138,8 +138,8 @@ pub impl @protobuf.Sized for Config with fn size_of(self) {
 ///|
 pub impl Default for Config with fn default() -> Config {
   Config::{
-    version: String::default(),
-    engine: String::default(),
+    version: Default::default(),
+    engine: Default::default(),
     schema: [],
     queries: [],
   }
@@ -198,7 +198,7 @@ pub impl @protobuf.Write for Config with fn write(
 
 ///|
 pub impl ToJson for Config with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.version != Default::default() {
     json["version"] = self.version.to_json()
   }
@@ -231,7 +231,7 @@ pub impl @json.FromJson for Config with fn from_json(
         message.schema = value.map(v => @json.from_json(v, path~))
       ("queries", Array(value)) =>
         message.queries = value.map(v => @json.from_json(v, path~))
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -314,9 +314,9 @@ pub impl @protobuf.Sized for Query with fn size_of(self) {
 ///|
 pub impl Default for Query with fn default() -> Query {
   Query::{
-    sql: String::default(),
-    name: String::default(),
-    cmd: String::default(),
+    sql: Default::default(),
+    name: Default::default(),
+    cmd: Default::default(),
     params: [],
   }
 }
@@ -374,7 +374,7 @@ pub impl @protobuf.Write for Query with fn write(
 
 ///|
 pub impl ToJson for Query with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.sql != Default::default() {
     json["sql"] = self.sql.to_json()
   }
@@ -406,7 +406,7 @@ pub impl @json.FromJson for Query with fn from_json(
       ("cmd", value) => message.cmd = @json.from_json(value, path~)
       ("parameters", Array(value)) =>
         message.params = value.map(v => @json.from_json(v, path~))
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -513,7 +513,7 @@ pub impl @protobuf.Write for PostgreSQL with fn write(
 
 ///|
 pub impl ToJson for PostgreSQL with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.explain != Default::default() {
     json["explain"] = self.explain.to_json()
   }
@@ -532,7 +532,7 @@ pub impl @json.FromJson for PostgreSQL with fn from_json(
   for key, value in obj {
     match (key, value) {
       ("explain", value) => message.explain = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -596,8 +596,8 @@ pub impl @protobuf.Sized for PostgreSQLExplain_SettingsEntry with fn size_of(
 ///|
 pub impl Default for PostgreSQLExplain_SettingsEntry with fn default() -> PostgreSQLExplain_SettingsEntry {
   PostgreSQLExplain_SettingsEntry::{
-    key: String::default(),
-    value: String::default(),
+    key: Default::default(),
+    value: Default::default(),
   }
 }
 
@@ -642,7 +642,7 @@ pub impl @protobuf.Write for PostgreSQLExplain_SettingsEntry with fn write(
 
 ///|
 pub impl ToJson for PostgreSQLExplain_SettingsEntry with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.key != Default::default() {
     json["key"] = self.key.to_json()
   }
@@ -667,7 +667,7 @@ pub impl @json.FromJson for PostgreSQLExplain_SettingsEntry with fn from_json(
     match (key, value) {
       ("key", value) => message.key = @json.from_json(value, path~)
       ("value", value) => message.value = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -826,36 +826,36 @@ pub impl @protobuf.Sized for PostgreSQLExplain_Plan with fn size_of(self) {
 ///|
 pub impl Default for PostgreSQLExplain_Plan with fn default() -> PostgreSQLExplain_Plan {
   PostgreSQLExplain_Plan::{
-    node_type: String::default(),
-    parent_relationship: String::default(),
-    relation_name: String::default(),
-    schema: String::default(),
-    alias_: String::default(),
-    parallel_aware: Bool::default(),
-    async_capable: Bool::default(),
-    startup_cost: Float::default(),
-    total_cost: Float::default(),
-    plan_rows: UInt64::default(),
-    plan_width: UInt64::default(),
+    node_type: Default::default(),
+    parent_relationship: Default::default(),
+    relation_name: Default::default(),
+    schema: Default::default(),
+    alias_: Default::default(),
+    parallel_aware: Default::default(),
+    async_capable: Default::default(),
+    startup_cost: Default::default(),
+    total_cost: Default::default(),
+    plan_rows: Default::default(),
+    plan_width: Default::default(),
     output: [],
     plans: [],
-    shared_hit_blocks: UInt64::default(),
-    shared_read_blocks: UInt64::default(),
-    shared_dirtied_blocks: UInt64::default(),
-    shared_written_blocks: UInt64::default(),
-    local_hit_blocks: UInt64::default(),
-    local_read_blocks: UInt64::default(),
-    local_dirtied_blocks: UInt64::default(),
-    local_written_blocks: UInt64::default(),
-    temp_read_blocks: UInt64::default(),
-    temp_written_blocks: UInt64::default(),
+    shared_hit_blocks: Default::default(),
+    shared_read_blocks: Default::default(),
+    shared_dirtied_blocks: Default::default(),
+    shared_written_blocks: Default::default(),
+    local_hit_blocks: Default::default(),
+    local_read_blocks: Default::default(),
+    local_dirtied_blocks: Default::default(),
+    local_written_blocks: Default::default(),
+    temp_read_blocks: Default::default(),
+    temp_written_blocks: Default::default(),
     sort_key: [],
-    join_type: String::default(),
-    inner_unique: Bool::default(),
-    hash_cond: String::default(),
-    index_name: String::default(),
-    scan_direction: String::default(),
-    index_cond: String::default(),
+    join_type: Default::default(),
+    inner_unique: Default::default(),
+    hash_cond: Default::default(),
+    index_name: Default::default(),
+    scan_direction: Default::default(),
+    index_cond: Default::default(),
   }
 }
 
@@ -1053,7 +1053,7 @@ pub impl @protobuf.Write for PostgreSQLExplain_Plan with fn write(
 
 ///|
 pub impl ToJson for PostgreSQLExplain_Plan with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.node_type != Default::default() {
     json["Node Type"] = self.node_type.to_json()
   }
@@ -1214,7 +1214,7 @@ pub impl @json.FromJson for PostgreSQLExplain_Plan with fn from_json(
         message.scan_direction = @json.from_json(value, path~)
       ("Index Cond", value) =>
         message.index_cond = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -1389,16 +1389,16 @@ pub impl @protobuf.Sized for PostgreSQLExplain_Planning with fn size_of(self) {
 ///|
 pub impl Default for PostgreSQLExplain_Planning with fn default() -> PostgreSQLExplain_Planning {
   PostgreSQLExplain_Planning::{
-    shared_hit_blocks: UInt64::default(),
-    shared_read_blocks: UInt64::default(),
-    shared_dirtied_blocks: UInt64::default(),
-    shared_written_blocks: UInt64::default(),
-    local_hit_blocks: UInt64::default(),
-    local_read_blocks: UInt64::default(),
-    local_dirtied_blocks: UInt64::default(),
-    local_written_blocks: UInt64::default(),
-    temp_read_blocks: UInt64::default(),
-    temp_written_blocks: UInt64::default(),
+    shared_hit_blocks: Default::default(),
+    shared_read_blocks: Default::default(),
+    shared_dirtied_blocks: Default::default(),
+    shared_written_blocks: Default::default(),
+    local_hit_blocks: Default::default(),
+    local_read_blocks: Default::default(),
+    local_dirtied_blocks: Default::default(),
+    local_written_blocks: Default::default(),
+    temp_read_blocks: Default::default(),
+    temp_written_blocks: Default::default(),
   }
 }
 
@@ -1486,7 +1486,7 @@ pub impl @protobuf.Write for PostgreSQLExplain_Planning with fn write(
 
 ///|
 pub impl ToJson for PostgreSQLExplain_Planning with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.shared_hit_blocks != Default::default() {
     json["Shared Hit Blocks"] = self.shared_hit_blocks.to_json()
   }
@@ -1553,7 +1553,7 @@ pub impl @json.FromJson for PostgreSQLExplain_Planning with fn from_json(
         message.temp_read_blocks = @json.from_json(value, path~)
       ("Temp Written Blocks", value) =>
         message.temp_written_blocks = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -1744,7 +1744,7 @@ pub impl @protobuf.Write for PostgreSQLExplain with fn write(
 
 ///|
 pub impl ToJson for PostgreSQLExplain with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.plan != Default::default() {
     json["Plan"] = self.plan.to_json()
   }
@@ -1773,7 +1773,7 @@ pub impl @json.FromJson for PostgreSQLExplain with fn from_json(
       ("Plan", value) => message.plan = @json.from_json(value, path~)
       ("Settings", _) => message.settings = @json.from_json(value, path~)
       ("Planning", value) => message.planning = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -1902,7 +1902,7 @@ pub impl @protobuf.Write for MySQL with fn write(
 
 ///|
 pub impl ToJson for MySQL with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.explain != Default::default() {
     json["explain"] = self.explain.to_json()
   }
@@ -1921,7 +1921,7 @@ pub impl @json.FromJson for MySQL with fn from_json(
   for key, value in obj {
     match (key, value) {
       ("explain", value) => message.explain = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -1984,8 +1984,8 @@ pub impl @protobuf.Sized for MySQLExplain_QueryBlock_CostInfoEntry with fn size_
 ///|
 pub impl Default for MySQLExplain_QueryBlock_CostInfoEntry with fn default() -> MySQLExplain_QueryBlock_CostInfoEntry {
   MySQLExplain_QueryBlock_CostInfoEntry::{
-    key: String::default(),
-    value: String::default(),
+    key: Default::default(),
+    value: Default::default(),
   }
 }
 
@@ -2030,7 +2030,7 @@ pub impl @protobuf.Write for MySQLExplain_QueryBlock_CostInfoEntry with fn write
 
 ///|
 pub impl ToJson for MySQLExplain_QueryBlock_CostInfoEntry with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.key != Default::default() {
     json["key"] = self.key.to_json()
   }
@@ -2055,7 +2055,7 @@ pub impl @json.FromJson for MySQLExplain_QueryBlock_CostInfoEntry with fn from_j
     match (key, value) {
       ("key", value) => message.key = @json.from_json(value, path~)
       ("value", value) => message.value = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -2147,8 +2147,8 @@ pub impl @protobuf.Sized for MySQLExplain_QueryBlock with fn size_of(self) {
 ///|
 pub impl Default for MySQLExplain_QueryBlock with fn default() -> MySQLExplain_QueryBlock {
   MySQLExplain_QueryBlock::{
-    select_id: UInt64::default(),
-    message: String::default(),
+    select_id: Default::default(),
+    message: Default::default(),
     cost_info: {},
     table: MySQLExplain_Table::default(),
     ordering_operation: MySQLExplain_OrderingOperation::default(),
@@ -2255,7 +2255,7 @@ pub impl @protobuf.Write for MySQLExplain_QueryBlock with fn write(
 
 ///|
 pub impl ToJson for MySQLExplain_QueryBlock with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.select_id != Default::default() {
     json["selectId"] = self.select_id.to_json()
   }
@@ -2298,7 +2298,7 @@ pub impl @json.FromJson for MySQLExplain_QueryBlock with fn from_json(
         message.ordering_operation = @json.from_json(value, path~)
       ("nestedLoop", Array(value)) =>
         message.nested_loop = value.map(v => @json.from_json(v, path~))
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -2414,8 +2414,8 @@ pub impl @protobuf.Sized for MySQLExplain_Table_CostInfoEntry with fn size_of(
 ///|
 pub impl Default for MySQLExplain_Table_CostInfoEntry with fn default() -> MySQLExplain_Table_CostInfoEntry {
   MySQLExplain_Table_CostInfoEntry::{
-    key: String::default(),
-    value: String::default(),
+    key: Default::default(),
+    value: Default::default(),
   }
 }
 
@@ -2460,7 +2460,7 @@ pub impl @protobuf.Write for MySQLExplain_Table_CostInfoEntry with fn write(
 
 ///|
 pub impl ToJson for MySQLExplain_Table_CostInfoEntry with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.key != Default::default() {
     json["key"] = self.key.to_json()
   }
@@ -2485,7 +2485,7 @@ pub impl @json.FromJson for MySQLExplain_Table_CostInfoEntry with fn from_json(
     match (key, value) {
       ("key", value) => message.key = @json.from_json(value, path~)
       ("value", value) => message.value = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -2608,18 +2608,18 @@ pub impl @protobuf.Sized for MySQLExplain_Table with fn size_of(self) {
 ///|
 pub impl Default for MySQLExplain_Table with fn default() -> MySQLExplain_Table {
   MySQLExplain_Table::{
-    table_name: String::default(),
-    access_type: String::default(),
-    rows_examined_per_scan: UInt64::default(),
-    rows_produced_per_join: UInt64::default(),
-    filtered: String::default(),
+    table_name: Default::default(),
+    access_type: Default::default(),
+    rows_examined_per_scan: Default::default(),
+    rows_produced_per_join: Default::default(),
+    filtered: Default::default(),
     cost_info: {},
     used_columns: [],
-    insert: Bool::default(),
+    insert: Default::default(),
     possible_keys: [],
-    key: String::default(),
+    key: Default::default(),
     used_key_parts: [],
-    key_length: String::default(),
+    key_length: Default::default(),
     ref_: [],
   }
 }
@@ -2755,7 +2755,7 @@ pub impl @protobuf.Write for MySQLExplain_Table with fn write(
 
 ///|
 pub impl ToJson for MySQLExplain_Table with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.table_name != Default::default() {
     json["tableName"] = self.table_name.to_json()
   }
@@ -2831,7 +2831,7 @@ pub impl @json.FromJson for MySQLExplain_Table with fn from_json(
       ("keyLength", value) => message.key_length = @json.from_json(value, path~)
       ("ref", Array(value)) =>
         message.ref_ = value.map(v => @json.from_json(v, path~))
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -2997,7 +2997,7 @@ pub impl @protobuf.Write for MySQLExplain_NestedLoopObj with fn write(
 
 ///|
 pub impl ToJson for MySQLExplain_NestedLoopObj with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.table != Default::default() {
     json["table"] = self.table.to_json()
   }
@@ -3018,7 +3018,7 @@ pub impl @json.FromJson for MySQLExplain_NestedLoopObj with fn from_json(
   for key, value in obj {
     match (key, value) {
       ("table", value) => message.table = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -3082,8 +3082,8 @@ pub impl @protobuf.Sized for MySQLExplain_OrderingOperation_CostInfoEntry with f
 ///|
 pub impl Default for MySQLExplain_OrderingOperation_CostInfoEntry with fn default() -> MySQLExplain_OrderingOperation_CostInfoEntry {
   MySQLExplain_OrderingOperation_CostInfoEntry::{
-    key: String::default(),
-    value: String::default(),
+    key: Default::default(),
+    value: Default::default(),
   }
 }
 
@@ -3130,7 +3130,7 @@ pub impl @protobuf.Write for MySQLExplain_OrderingOperation_CostInfoEntry with f
 pub impl ToJson for MySQLExplain_OrderingOperation_CostInfoEntry with fn to_json(
   self,
 ) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.key != Default::default() {
     json["key"] = self.key.to_json()
   }
@@ -3157,7 +3157,7 @@ pub impl @json.FromJson for MySQLExplain_OrderingOperation_CostInfoEntry with fn
     match (key, value) {
       ("key", value) => message.key = @json.from_json(value, path~)
       ("value", value) => message.value = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -3239,7 +3239,7 @@ pub impl @protobuf.Sized for MySQLExplain_OrderingOperation with fn size_of(
 ///|
 pub impl Default for MySQLExplain_OrderingOperation with fn default() -> MySQLExplain_OrderingOperation {
   MySQLExplain_OrderingOperation::{
-    using_filesort: Bool::default(),
+    using_filesort: Default::default(),
     cost_info: {},
     table: MySQLExplain_Table::default(),
     nested_loop: [],
@@ -3332,7 +3332,7 @@ pub impl @protobuf.Write for MySQLExplain_OrderingOperation with fn write(
 
 ///|
 pub impl ToJson for MySQLExplain_OrderingOperation with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.using_filesort != Default::default() {
     json["usingFilesort"] = self.using_filesort.to_json()
   }
@@ -3367,7 +3367,7 @@ pub impl @json.FromJson for MySQLExplain_OrderingOperation with fn from_json(
       ("table", value) => message.table = @json.from_json(value, path~)
       ("nestedLoop", Array(value)) =>
         message.nested_loop = value.map(v => @json.from_json(v, path~))
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message
@@ -3504,7 +3504,7 @@ pub impl @protobuf.Write for MySQLExplain with fn write(
 
 ///|
 pub impl ToJson for MySQLExplain with fn to_json(self) {
-  let json : Map[String, Json] = {}
+  let json : Map[String, Json] = Map([])
   if self.query_block != Default::default() {
     json["queryBlock"] = self.query_block.to_json()
   }
@@ -3524,7 +3524,7 @@ pub impl @json.FromJson for MySQLExplain with fn from_json(
     match (key, value) {
       ("queryBlock", value) =>
         message.query_block = @json.from_json(value, path~)
-      key => raise @json.JsonDecodeError((path, "Unknown field \{key}"))
+      (key, _) => raise @json.JsonDecodeError((path, "Unknown field " + key))
     }
   }
   message

@@ -28,8 +28,8 @@ async fn run_tests_inner() -> Unit {
   match @gen.get_user(pool, @gen.GetUserParams::new(user_id)) {
     Some(user) => {
       println("Found user: \{user.name} <\{user.email}>")
-      guard user.name == "Alice"
-      guard user.email == "alice@example.com"
+      guard! user.name == "Alice"
+      guard! user.email == "alice@example.com"
     }
     None => {
       println("ERROR: User not found!")
@@ -58,7 +58,7 @@ async fn run_tests_inner() -> Unit {
   match @gen.get_user(pool, @gen.GetUserParams::new(user_id)) {
     Some(user) => {
       println("Updated user: \{user.name} <\{user.email}>")
-      guard user.name == "Alice Updated"
+      guard! user.name == "Alice Updated"
     }
     None => panic()
   }
