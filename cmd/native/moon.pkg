@@ -1,11 +1,12 @@
 import {
-  "mizchi/sqlc_gen_moonbit/lib/codegen" @codegen,
+  "mizchi/sqlc_gen_moonbit/lib/codegen",
 }
 
 supported_targets = "native"
 
+pkgtype(kind: "executable")
+
 options(
-  "is-main": true,
   "native-stub": [ "stub.c" ],
   targets: {
     "ffi_native.mbt": [ "native" ],

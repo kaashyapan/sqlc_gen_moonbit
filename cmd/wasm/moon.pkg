@@ -1,9 +1,7 @@
 import {
-  "mizchi/sqlc_gen_moonbit/lib/codegen" @codegen,
+  "mizchi/sqlc_gen_moonbit/lib/codegen",
 }
 
 supported_targets = "wasm+wasm-gc"
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")

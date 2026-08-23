@@ -11,7 +11,7 @@ pub fn D1Backend::new() -> D1Backend {
 }
 
 ///|
-impl BackendCodeGen for D1Backend with info(_self) {
+impl BackendCodeGen for D1Backend with fn info(_self) {
   BackendInfo::new(
     "d1",
     "@cloudflare.D1Database",
@@ -23,13 +23,18 @@ impl BackendCodeGen for D1Backend with info(_self) {
 }
 
 ///|
-impl BackendCodeGen for D1Backend with generate_helpers(_self, buf) {
+impl BackendCodeGen for D1Backend with fn generate_helpers(_self, buf) {
   // D1 doesn't need helper functions
   buf.write_string("// Requires: mizchi/cloudflare\n\n")
 }
 
 ///|
-impl BackendCodeGen for D1Backend with param_bind_expr(_self, col, _idx, expr) {
+impl BackendCodeGen for D1Backend with fn param_bind_expr(
+  _self,
+  col,
+  _idx,
+  expr,
+) {
   let type_name = col.type_.name.to_upper()
   let is_nullable = !col.not_null
   if is_nullable {
@@ -61,7 +66,7 @@ impl BackendCodeGen for D1Backend with param_bind_expr(_self, col, _idx, expr) {
 }
 
 ///|
-impl BackendCodeGen for D1Backend with column_read_expr(
+impl BackendCodeGen for D1Backend with fn column_read_expr(
   _self,
   col,
   _idx,
@@ -128,7 +133,7 @@ impl BackendCodeGen for D1Backend with column_read_expr(
 }
 
 ///|
-impl BackendCodeGen for D1Backend with generate_one(
+impl BackendCodeGen for D1Backend with fn generate_one(
   self,
   buf,
   query,
@@ -166,7 +171,7 @@ impl BackendCodeGen for D1Backend with generate_one(
 }
 
 ///|
-impl BackendCodeGen for D1Backend with generate_many(
+impl BackendCodeGen for D1Backend with fn generate_many(
   self,
   buf,
   query,
@@ -210,7 +215,7 @@ impl BackendCodeGen for D1Backend with generate_many(
 }
 
 ///|
-impl BackendCodeGen for D1Backend with generate_exec(
+impl BackendCodeGen for D1Backend with fn generate_exec(
   self,
   buf,
   query,
@@ -237,7 +242,7 @@ impl BackendCodeGen for D1Backend with generate_exec(
 }
 
 ///|
-impl BackendCodeGen for D1Backend with generate_execrows(
+impl BackendCodeGen for D1Backend with fn generate_execrows(
   self,
   buf,
   query,
@@ -268,7 +273,7 @@ impl BackendCodeGen for D1Backend with generate_execrows(
 }
 
 ///|
-impl BackendCodeGen for D1Backend with generate_execlastid(
+impl BackendCodeGen for D1Backend with fn generate_execlastid(
   self,
   buf,
   query,

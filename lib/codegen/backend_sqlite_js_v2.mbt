@@ -11,7 +11,7 @@ pub fn SqliteJsBackend::new() -> SqliteJsBackend {
 }
 
 ///|
-impl BackendCodeGen for SqliteJsBackend with info(_self) {
+impl BackendCodeGen for SqliteJsBackend with fn info(_self) {
   BackendInfo::new(
     "sqlite_js",
     "@sqlite.Database",
@@ -23,7 +23,7 @@ impl BackendCodeGen for SqliteJsBackend with info(_self) {
 }
 
 ///|
-impl BackendCodeGen for SqliteJsBackend with generate_helpers(_self, buf) {
+impl BackendCodeGen for SqliteJsBackend with fn generate_helpers(_self, buf) {
   buf.write_string("// Requires: mizchi/sqlite (JS target)\n\n")
   buf.write_string("///|\nfn bytes_to_string(b : Bytes) -> String {\n")
   buf.write_string("  let decoder = @encoding.decoder(@encoding.UTF8)\n")
@@ -32,7 +32,7 @@ impl BackendCodeGen for SqliteJsBackend with generate_helpers(_self, buf) {
 }
 
 ///|
-impl BackendCodeGen for SqliteJsBackend with param_bind_expr(
+impl BackendCodeGen for SqliteJsBackend with fn param_bind_expr(
   _self,
   col,
   _idx,
@@ -96,7 +96,7 @@ impl BackendCodeGen for SqliteJsBackend with param_bind_expr(
 }
 
 ///|
-impl BackendCodeGen for SqliteJsBackend with column_read_expr(
+impl BackendCodeGen for SqliteJsBackend with fn column_read_expr(
   _self,
   col,
   idx,
@@ -135,7 +135,7 @@ impl BackendCodeGen for SqliteJsBackend with column_read_expr(
 }
 
 ///|
-impl BackendCodeGen for SqliteJsBackend with generate_one(
+impl BackendCodeGen for SqliteJsBackend with fn generate_one(
   self,
   buf,
   query,
@@ -184,7 +184,7 @@ impl BackendCodeGen for SqliteJsBackend with generate_one(
 }
 
 ///|
-impl BackendCodeGen for SqliteJsBackend with generate_many(
+impl BackendCodeGen for SqliteJsBackend with fn generate_many(
   self,
   buf,
   query,
@@ -234,7 +234,7 @@ impl BackendCodeGen for SqliteJsBackend with generate_many(
 }
 
 ///|
-impl BackendCodeGen for SqliteJsBackend with generate_exec(
+impl BackendCodeGen for SqliteJsBackend with fn generate_exec(
   self,
   buf,
   query,
@@ -266,7 +266,7 @@ impl BackendCodeGen for SqliteJsBackend with generate_exec(
 }
 
 ///|
-impl BackendCodeGen for SqliteJsBackend with generate_execrows(
+impl BackendCodeGen for SqliteJsBackend with fn generate_execrows(
   self,
   buf,
   query,
@@ -299,7 +299,7 @@ impl BackendCodeGen for SqliteJsBackend with generate_execrows(
 }
 
 ///|
-impl BackendCodeGen for SqliteJsBackend with generate_execlastid(
+impl BackendCodeGen for SqliteJsBackend with fn generate_execlastid(
   self,
   buf,
   query,

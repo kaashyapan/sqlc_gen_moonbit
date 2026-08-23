@@ -56,8 +56,8 @@ moon new .
   "name": "my_postgres_project",
   "version": "0.0.1",
   "deps": {
-    "mattn/postgres": "0.10.4",
-    "moonbitlang/x": "0.4.38"
+    "moonbit-community/postgres": "0.0.6",
+    "moonbitlang/x": "0.4.40"
   },
   "supported-targets": ["native"]
 }
@@ -140,7 +140,7 @@ This generates the following files in `db/gen/`:
 ```json
 {
   "import": [
-    "mattn/postgres",
+    "moonbit-community/postgres",
     "moonbitlang/x/strconv"
   ]
 }
@@ -153,7 +153,7 @@ This generates the following files in `db/gen/`:
   "is-main": true,
   "import": [
     { "path": "my_postgres_project/db/gen", "alias": "gen" },
-    "mattn/postgres"
+    "moonbit-community/postgres"
   ]
 }
 ```
@@ -335,4 +335,4 @@ conn.query("COMMIT") |> ignore
 
 - [Complete example](../examples/postgres_native/)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [MoonBit PostgreSQL Library](https://mooncakes.io/docs/#/mattn/postgres/)
+- [MoonBit PostgreSQL Library](https://mooncakes.io/docs/#/moonbit-community/postgres/)

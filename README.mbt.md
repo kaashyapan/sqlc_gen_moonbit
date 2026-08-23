@@ -13,7 +13,7 @@
 | `sqlite` | `native` | Native binary | `mizchi/sqlite` |
 | `sqlite_js` | `js` | Node.js / Browser | `mizchi/sqlite`, `mizchi/js` |
 | `d1` | `js` | Cloudflare Workers | `mizchi/cloudflare`, `mizchi/js` |
-| `postgres` | `native` | Native binary | `mattn/postgres` |
+| `postgres` | `native` | Native binary | `moonbit-community/postgres` |
 | `postgres_js` | `js` | Node.js | `mizchi/npm_typed/pg`, `mizchi/js` |
 | `mysql_js` | `js` | Node.js | `mizchi/js` (mysql2 npm package) |
 
@@ -114,7 +114,7 @@ Add dependencies to `moon.mod.json`:
 {
   "deps": {
     "mizchi/sqlite": "0.1.3",
-    "moonbitlang/x": "0.4.38"
+    "moonbitlang/x": "0.4.40"
   }
 }
 ```
@@ -179,7 +179,7 @@ Add dependencies to `moon.mod.json`:
   "deps": {
     "mizchi/npm_typed": "0.1.2",
     "mizchi/js": "0.10.10",
-    "moonbitlang/x": "0.4.38"
+    "moonbitlang/x": "0.4.40"
   }
 }
 ```
@@ -447,6 +447,7 @@ The pattern:
 
 ```moonbit nocheck
 // 1. Sqlc-generated query lives in the `@db` package.
+
 ///|
 async fn list_pages_markdown(
   binding : String,

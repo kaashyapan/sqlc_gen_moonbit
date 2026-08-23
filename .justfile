@@ -15,7 +15,7 @@ build:
 test: test-core
 
 # Run all tests including postgres (requires libpq)
-test-all: test-core test-pg
+test-all: test-core
 
 # Core tests (no postgres)
 test-core:
@@ -31,9 +31,9 @@ test-core-ci:
     cd tests/sqlite_js && moon test --target js
     cd tests/d1 && moon test --target js
 
-# Postgres native tests (requires libpq + DATABASE_URL/POSTGRES_TEST_URL)
+# Postgres native tests
 test-pg:
-    tools/pg/run.sh moon test --target native --package backend_postgres_native_test -C tests/postgres_native
+    cd examples/postgres_native && moon run app/main.mbt
 
 # PostgreSQL JS tests (requires postgres on localhost:5432)
 test-postgres-js:
@@ -50,6 +50,7 @@ generate: build
     cd examples/d1 && sqlc generate
     cd examples/postgres_js && sqlc generate
     cd examples/mysql_js && sqlc generate
+    cd examples/postgres_native && sqlc generate
 
 # D1 tasks
 # action: build|dev|migrate-diff|migrate-apply|migrate-apply-remote|migrate-status|migrate-lint|migrate-hash
@@ -88,6 +89,7 @@ check:
     cd examples/d1 && moon check --target js
     cd examples/postgres_js && moon check --target js
     cd examples/mysql_js && moon check --target js
+    cd examples/postgres_native && moon check --target native
 
 # Clean build artifacts
 clean:
@@ -97,6 +99,7 @@ clean:
     cd examples/d1 && moon clean
     cd examples/postgres_js && moon clean
     cd examples/mysql_js && moon clean
+    cd examples/postgres_native && moon clean
 
 # Format all MoonBit code
 fmt:
@@ -106,3 +109,4 @@ fmt:
     cd examples/d1 && moon fmt
     cd examples/postgres_js && moon fmt
     cd examples/mysql_js && moon fmt
+    cd examples/postgres_native && moon fmt

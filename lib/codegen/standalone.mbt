@@ -19,7 +19,7 @@ pub fn parse_sql_queries(content : String) -> Array[QueryDef] {
   let lines = standalone_split_lines(content)
   let mut i = 0
   while i < lines.length() {
-    let line = lines[i].trim().to_string()
+    let line = lines[i].trim().to_owned()
     if line.has_prefix("-- @query ") {
       let parts = standalone_split_whitespace(standalone_substr(line, 10))
       if parts.length() >= 2 {
@@ -30,7 +30,7 @@ pub fn parse_sql_queries(content : String) -> Array[QueryDef] {
         let sql_lines : Array[String] = []
         i = i + 1
         while i < lines.length() {
-          let next_line = lines[i].trim().to_string()
+          let next_line = lines[i].trim().to_owned()
           if next_line.has_prefix("-- @param ") {
             let param_str = standalone_substr(next_line, 10)
             let param_parts = standalone_split_whitespace(param_str)
@@ -41,9 +41,7 @@ pub fn parse_sql_queries(content : String) -> Array[QueryDef] {
             let ret_str = standalone_substr(next_line, 12)
             let cols = standalone_split_by_comma(ret_str)
             for col in cols {
-              let col_parts = standalone_split_whitespace(
-                col.trim().to_string(),
-              )
+              let col_parts = standalone_split_whitespace(col.trim().to_owned())
               if col_parts.length() >= 2 {
                 returns.push((col_parts[0], col_parts[1]))
               }

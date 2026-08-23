@@ -6,7 +6,7 @@ pub(all) struct Identifier {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for Identifier with size_of(self) {
+pub impl @protobuf.Sized for Identifier with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -27,7 +27,7 @@ pub impl @protobuf.Sized for Identifier with size_of(self) {
 }
 
 ///|
-pub impl Default for Identifier with default() -> Identifier {
+pub impl Default for Identifier with fn default() -> Identifier {
   Identifier::{
     catalog: String::default(),
     schema: String::default(),
@@ -45,7 +45,7 @@ pub fn Identifier::new(
 }
 
 ///|
-pub impl @protobuf.Read for Identifier with read_with_limit(
+pub impl @protobuf.Read for Identifier with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> Identifier raise {
   let msg = Identifier::default()
@@ -66,7 +66,7 @@ pub impl @protobuf.Read for Identifier with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for Identifier with write(
+pub impl @protobuf.Write for Identifier with fn write(
   self : Identifier,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -79,7 +79,7 @@ pub impl @protobuf.Write for Identifier with write(
 }
 
 ///|
-pub impl ToJson for Identifier with to_json(self) {
+pub impl ToJson for Identifier with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.catalog != Default::default() {
     json["catalog"] = self.catalog.to_json()
@@ -94,7 +94,7 @@ pub impl ToJson for Identifier with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for Identifier with from_json(
+pub impl @json.FromJson for Identifier with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> Identifier raise {
@@ -114,7 +114,7 @@ pub impl @json.FromJson for Identifier with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for Identifier with read_with_limit(
+pub impl @protobuf.AsyncRead for Identifier with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> Identifier raise {
   let msg = Identifier::default()
@@ -135,7 +135,7 @@ pub impl @protobuf.AsyncRead for Identifier with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for Identifier with write(
+pub impl @protobuf.AsyncWrite for Identifier with fn write(
   self : Identifier,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -169,7 +169,7 @@ pub(all) struct Column {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for Column with size_of(self) {
+pub impl @protobuf.Sized for Column with fn size_of(self) {
   let mut size = 0U
   size += 1U +
     ({
@@ -228,7 +228,7 @@ pub impl @protobuf.Sized for Column with size_of(self) {
 }
 
 ///|
-pub impl Default for Column with default() -> Column {
+pub impl Default for Column with fn default() -> Column {
   Column::{
     name: String::default(),
     original_name: String::default(),
@@ -292,7 +292,7 @@ pub fn Column::new(
 }
 
 ///|
-pub impl @protobuf.Read for Column with read_with_limit(
+pub impl @protobuf.Read for Column with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> Column raise {
   let msg = Column::default()
@@ -328,7 +328,7 @@ pub impl @protobuf.Read for Column with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for Column with write(
+pub impl @protobuf.Write for Column with fn write(
   self : Column,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -372,7 +372,7 @@ pub impl @protobuf.Write for Column with write(
 }
 
 ///|
-pub impl ToJson for Column with to_json(self) {
+pub impl ToJson for Column with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.name != Default::default() {
     json["name"] = self.name.to_json()
@@ -429,7 +429,7 @@ pub impl ToJson for Column with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for Column with from_json(
+pub impl @json.FromJson for Column with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> Column raise {
@@ -469,7 +469,7 @@ pub impl @json.FromJson for Column with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for Column with read_with_limit(
+pub impl @protobuf.AsyncRead for Column with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> Column raise {
   let msg = Column::default()
@@ -508,7 +508,7 @@ pub impl @protobuf.AsyncRead for Column with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for Column with write(
+pub impl @protobuf.AsyncWrite for Column with fn write(
   self : Column,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -558,7 +558,7 @@ pub(all) struct Parameter {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for Parameter with size_of(self) {
+pub impl @protobuf.Sized for Parameter with fn size_of(self) {
   let mut size = 0U
   size += 1U + @protobuf.size_of(self.number)
   size += 1U +
@@ -570,7 +570,7 @@ pub impl @protobuf.Sized for Parameter with size_of(self) {
 }
 
 ///|
-pub impl Default for Parameter with default() -> Parameter {
+pub impl Default for Parameter with fn default() -> Parameter {
   Parameter::{ number: Int::default(), column: Column::default() }
 }
 
@@ -580,7 +580,7 @@ pub fn Parameter::new(number : Int, column : Column) -> Parameter {
 }
 
 ///|
-pub impl @protobuf.Read for Parameter with read_with_limit(
+pub impl @protobuf.Read for Parameter with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> Parameter raise {
   let msg = Parameter::default()
@@ -600,7 +600,7 @@ pub impl @protobuf.Read for Parameter with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for Parameter with write(
+pub impl @protobuf.Write for Parameter with fn write(
   self : Parameter,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -612,7 +612,7 @@ pub impl @protobuf.Write for Parameter with write(
 }
 
 ///|
-pub impl ToJson for Parameter with to_json(self) {
+pub impl ToJson for Parameter with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.number != Default::default() {
     json["number"] = self.number.to_json()
@@ -624,7 +624,7 @@ pub impl ToJson for Parameter with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for Parameter with from_json(
+pub impl @json.FromJson for Parameter with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> Parameter raise {
@@ -643,7 +643,7 @@ pub impl @json.FromJson for Parameter with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for Parameter with read_with_limit(
+pub impl @protobuf.AsyncRead for Parameter with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> Parameter raise {
   let msg = Parameter::default()
@@ -664,7 +664,7 @@ pub impl @protobuf.AsyncRead for Parameter with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for Parameter with write(
+pub impl @protobuf.AsyncWrite for Parameter with fn write(
   self : Parameter,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {
@@ -682,7 +682,7 @@ pub(all) struct Analysis {
 } derive(Eq, Debug)
 
 ///|
-pub impl @protobuf.Sized for Analysis with size_of(self) {
+pub impl @protobuf.Sized for Analysis with fn size_of(self) {
   let mut size = 0U
   for s in self.columns {
     let s = @protobuf.size_of(s)
@@ -696,7 +696,7 @@ pub impl @protobuf.Sized for Analysis with size_of(self) {
 }
 
 ///|
-pub impl Default for Analysis with default() -> Analysis {
+pub impl Default for Analysis with fn default() -> Analysis {
   Analysis::{ columns: [], params: [] }
 }
 
@@ -709,7 +709,7 @@ pub fn Analysis::new(
 }
 
 ///|
-pub impl @protobuf.Read for Analysis with read_with_limit(
+pub impl @protobuf.Read for Analysis with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.Reader],
 ) -> Analysis raise {
   let msg = Analysis::default()
@@ -731,7 +731,7 @@ pub impl @protobuf.Read for Analysis with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.Write for Analysis with write(
+pub impl @protobuf.Write for Analysis with fn write(
   self : Analysis,
   writer : &@protobuf.Writer,
 ) -> Unit raise {
@@ -748,7 +748,7 @@ pub impl @protobuf.Write for Analysis with write(
 }
 
 ///|
-pub impl ToJson for Analysis with to_json(self) {
+pub impl ToJson for Analysis with fn to_json(self) {
   let json : Map[String, Json] = {}
   if self.columns != Default::default() {
     json["columns"] = self.columns.to_json()
@@ -760,7 +760,7 @@ pub impl ToJson for Analysis with to_json(self) {
 }
 
 ///|
-pub impl @json.FromJson for Analysis with from_json(
+pub impl @json.FromJson for Analysis with fn from_json(
   json : Json,
   path : @json.JsonPath,
 ) -> Analysis raise {
@@ -781,7 +781,7 @@ pub impl @json.FromJson for Analysis with from_json(
 }
 
 ///|
-pub impl @protobuf.AsyncRead for Analysis with read_with_limit(
+pub impl @protobuf.AsyncRead for Analysis with fn read_with_limit(
   reader : @protobuf.LimitedReader[&@protobuf.AsyncReader],
 ) -> Analysis raise {
   let msg = Analysis::default()
@@ -805,7 +805,7 @@ pub impl @protobuf.AsyncRead for Analysis with read_with_limit(
 }
 
 ///|
-pub impl @protobuf.AsyncWrite for Analysis with write(
+pub impl @protobuf.AsyncWrite for Analysis with fn write(
   self : Analysis,
   writer : &@protobuf.AsyncWriter,
 ) -> Unit raise {

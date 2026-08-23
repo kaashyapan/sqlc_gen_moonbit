@@ -1,6 +1,51 @@
-CREATE TABLE IF NOT EXISTS users (
+--DROP TABLE test_users ;
+
+CREATE TABLE IF NOT EXISTS test_users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    bigserial_var BIGSERIAL,
+    int64_var BIGINT,
+    pg_int8_var INT8,
+    int_var INT4,
+    bool_var BOOL,
+    uuid_var uuid,
+    date_var date,
+    timestampz_var TIMESTAMPTZ,
+    timestamp_var TIMESTAMP,
+    time_var time,
+    int2_var INT2,
+    smallint_var INT2,
+    interval_var INTERVAL,
+    timetz_var TIMETZ,
+    json_var JSON,
+    jsonb_var JSONB,
+    bytes_var BYTEA,
+    float_var float4,
+    double_var float8,
+    numeric_var numeric
+);
+
+CREATE TABLE IF NOT EXISTS test_users_not_null (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    bigserial_var BIGSERIAL NOT NULL,
+    int64_var BIGINT NOT NULL,
+    pg_int8_var INT8 NOT NULL,
+    int_var INT4 NOT NULL,
+    bool_var BOOL NOT NULL,
+    uuid_var uuid NOT NULL,
+    date_var date NOT NULL,
+    timestampz_var TIMESTAMPTZ NOT NULL,
+    timestamp_var TIMESTAMP NOT NULL,
+    time_var time NOT NULL,
+    int2_var INT2 NOT NULL,
+    smallint_var INT2 NOT NULL,
+    interval_var INTERVAL NOT NULL,
+    timetz_var TIMETZ NOT NULL,
+    json_var JSON NOT NULL,
+    jsonb_var JSONB NOT NULL,
+    bytes_var BYTEA NOT NULL,
+    float_var REAL NOT NULL,
+    double_var float8 NOT NULL,
+    numeric_var numeric NOT NULL
 );

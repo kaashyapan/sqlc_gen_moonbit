@@ -1,14 +1,23 @@
 import {
-  "mattn/postgres",
+  "moonbit-community/postgres/client" @pgclient,
+  "kaashyapan/postgresx" @pghelpers,
+  "moonbitlang/x/decimal",
+  "moonbitlang/x/uuid",
+  "moonbitlang/x/time",
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/double",
+  "moonbitlang/core/float",
+  "moonbitlang/core/json",
+  "moonbitlang/core/ref",
+  "moonbitlang/core/string",
 }
 
+supported_targets = "native"
+
+warnings = "-20-27"
+
 options(
-  "supported-targets": [ "native" ],
-  "formatter": {
-    "ignore": [
-      "sqlc_types.mbt",
-      "sqlc_queries.mbt",
-      "sqlc_validators.mbt"
-    ]
+  formatter: {
+    "ignore": [ "sqlc_types.mbt", "sqlc_queries.mbt", "sqlc_validators.mbt" ],
   },
 )

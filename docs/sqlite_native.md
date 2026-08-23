@@ -44,7 +44,7 @@ moon new .
   "version": "0.0.1",
   "deps": {
     "mizchi/sqlite": "0.1.3",
-    "moonbitlang/x": "0.4.38"
+    "moonbitlang/x": "0.4.40"
   },
   "supported-targets": ["native"]
 }

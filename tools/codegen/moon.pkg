@@ -2,10 +2,8 @@ import {
   "moonbitlang/core/json",
   "moonbitlang/x/fs",
   "moonbitlang/x/sys",
-  "mizchi/codegen/ir" @ir,
-  "mizchi/codegen/emit" @emit,
+  "mizchi/codegen/ir",
+  "mizchi/codegen/emit",
 }
 
-options(
-  "is-main": true,
-)
+pkgtype(kind: "executable")
