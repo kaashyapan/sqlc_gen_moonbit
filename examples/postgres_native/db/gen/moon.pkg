@@ -16,4 +16,6 @@ supported_targets = "native"
 
 warnings = "-20-27"
 
-formatter(ignore: [ "sqlc_types.mbt", "sqlc_queries.mbt", "sqlc_validators.mbt" ])
+formatter(
+  ignore: [ "sqlc_types.mbt", "sqlc_queries.mbt", "sqlc_validators.mbt" ],
+)

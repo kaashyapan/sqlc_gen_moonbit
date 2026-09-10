@@ -40,7 +40,7 @@ pub struct Options {
 
 ///|
 pub fn Options::default() -> Options {
-  { backend: Sqlite, validators: false, json_schema: false, overrides: [] }
+  { backend: Sqlite, validators: false, json_schema: false, overrides: [], }
 }
 
 ///|
@@ -68,7 +68,7 @@ pub fn parse_plugin_options(data : Bytes) -> Options {
   let json_schema = json_str.contains("\"json_schema\":true") ||
     json_str.contains("\"json_schema\": true")
   let overrides = parse_overrides(json_str)
-  { backend, validators, json_schema, overrides }
+  { backend, validators, json_schema, overrides, }
 }
 
 ///|
@@ -150,7 +150,7 @@ fn parse_single_override(obj_content : String) -> TypeOverride? {
       } else {
         None
       }
-      Some({ column, db_type, moonbit_type: mbt, nullable })
+      Some({ column, db_type, moonbit_type: mbt, nullable, })
     }
     None => None
   }
