@@ -198,7 +198,7 @@ fn generate_types(
               buf,
               struct_name,
               query.columns,
-              options.overrides,
+              options,
               query,
             )
           _ =>
