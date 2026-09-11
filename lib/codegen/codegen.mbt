@@ -156,14 +156,10 @@ fn generate_moon_pkg(options : Options) -> String {
   }
 
   match options.backend {
-    Postgres => buf.write_string("warnings = \"-20-27\"\n\n")
+    Postgres => buf.write_string("warnings = \"-20-27-29\"\n\n")
     _ => buf.write_string("")
   }
 
-  // Exclude generated files from formatter
-  buf.write_string(
-    "formatter(ignore: [ \"sqlc_types.mbt\", \"sqlc_queries.mbt\", \"sqlc_validators.mbt\" ])\n",
-  )
   buf.to_string()
 }
 
