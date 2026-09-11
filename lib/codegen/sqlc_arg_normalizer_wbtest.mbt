@@ -168,6 +168,8 @@ test "normalized sqlc.arg is emitted in types and D1 bind sequence" {
     backend: D1,
     validators: false,
     json_schema: false,
+    file_prefix: "sql",
+    derives: [],
     overrides: [],
   }
   let types = generate_types(request, options)
@@ -220,6 +222,8 @@ test "normalized aggregate inference is emitted in D1 types and binds" {
   let options = Options::{
     backend: D1,
     validators: false,
+    derives: [],
+    file_prefix: "sql",
     json_schema: false,
     overrides: [],
   }

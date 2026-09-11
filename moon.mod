@@ -8,6 +8,7 @@ import {
   "mizchi/sqlite@0.2.3",
   "BigOrangeQWQ/wasi-io@0.2.6",
   "mizchi/codegen@0.2.3",
+  "moonbitlang/parser@0.3.18",
 }
 
 readme = "README.mbt.md"

@@ -252,6 +252,8 @@ test "sqlite moon package declares native target" {
     backend: Sqlite,
     validators: false,
     json_schema: false,
+    file_prefix: "sql",
+    derives: [],
     overrides: [],
   })
   assert_true(pkg.contains("supported_targets = \"native\""))

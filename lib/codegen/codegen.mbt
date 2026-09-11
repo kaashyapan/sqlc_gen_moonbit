@@ -25,7 +25,7 @@ pub fn process_request(input : Bytes) -> Bytes {
 
   // Generate types (backend-specific for error types)
   let types_content = generate_types(request, options)
-  files.push(generated_file("sqlc_types.mbt", types_content))
+  files.push(generated_file("\{options.file_prefix}_types.mbt", types_content))
 
   // Generate queries (backend-specific)
   let queries_content = match options.backend {
@@ -36,19 +36,28 @@ pub fn process_request(input : Bytes) -> Bytes {
     PostgresJs => generate_queries_postgres_js(request, options.overrides)
     MysqlJs => generate_queries_mysql_js(request, options.overrides)
   }
-  files.push(generated_file("sqlc_queries.mbt", queries_content))
+  files.push(
+    generated_file("\{options.file_prefix}_queries.mbt", queries_content),
+  )
 
   // Generate validators (optional)
   if options.validators {
     let validators_content = generate_validators(request)
-    files.push(generated_file("sqlc_validators.mbt", validators_content))
+    files.push(
+      generated_file(
+        "\{options.file_prefix}_validators.mbt",
+        validators_content,
+      ),
+    )
   }
 
   // Generate JSON Schema (optional). Keep it last so no following file can
   // expose stale wasm/protobuf response-size bugs as content corruption.
   if options.json_schema {
     let schema_content = generate_json_schema(request)
-    files.push(generated_file("sqlc_schema.json", schema_content))
+    files.push(
+      generated_file("\{options.file_prefix}_schema.json", schema_content),
+    )
   }
 
   // Self-validation: scan every generated MoonBit file for U+001F / other

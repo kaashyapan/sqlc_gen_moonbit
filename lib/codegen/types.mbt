@@ -58,6 +58,7 @@ pub struct Options {
   validators : Bool
   json_schema : Bool
   derives : Array[String]
+  file_prefix : String
   overrides : Array[TypeOverride]
 } derive(Debug)
 
@@ -95,6 +96,10 @@ pub impl FromJson for Options with fn from_json(
     }
     _ => []
   }
+  let file_prefix = match obj.get("file_prefix") {
+    Some(Json::String(prefix)) if prefix != "" => prefix
+    _ => "sqlc"
+  }
 
   let overrides = match obj.get("overrides") {
     Some(Array(arr)) => {
@@ -106,7 +111,14 @@ pub impl FromJson for Options with fn from_json(
     }
     _ => []
   }
-  Options::{ backend, validators, json_schema, derives, overrides, }
+  Options::{
+    backend,
+    validators,
+    json_schema,
+    file_prefix,
+    derives,
+    overrides,
+  }
 }
 
 ///|
@@ -119,6 +131,7 @@ pub fn parse_plugin_options(data : Bytes) -> Options {
     backend: Sqlite,
     validators: false,
     json_schema: false,
+    file_prefix: "sqlc",
     derives: [],
     overrides: [],
   }

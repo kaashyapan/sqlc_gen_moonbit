@@ -13,3 +13,4 @@ sql:
         options:
           backend: "postgres"
           derives: ["Eq", "Debug", "ToJson"]
+          file_prefix: "users" # defaults to sqlc, prevents extremely large output files
