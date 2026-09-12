@@ -8,4 +8,4 @@ import {
   "moonbitlang/async@0.20.3",
 }
 
-supported_targets = [ "js" ]
+supported_targets = "js"

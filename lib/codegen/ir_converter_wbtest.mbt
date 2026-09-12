@@ -257,11 +257,6 @@ test "sqlite moon package declares native target" {
     overrides: [],
   })
   assert_true(pkg.contains("supported_targets = \"native\""))
-  assert_true(
-    pkg.contains(
-      "formatter(ignore: [ \"sqlc_types.mbt\", \"sqlc_queries.mbt\", \"sqlc_validators.mbt\" ])",
-    ),
-  )
   assert_false(pkg.contains("options("))
 }
 

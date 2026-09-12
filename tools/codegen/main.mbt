@@ -1,3 +1,5 @@
+//|
+
 ///|
 /// Standalone SQL to MoonBit code generator
 /// Usage: moon run tools/codegen --target native -- [options] <input.sql>
@@ -118,7 +120,7 @@ fn main {
       // Read input file
       let content = @fs.read_file_to_string(input_file) catch {
         e => {
-          eprintln("Error reading file: " + e.to_string())
+          eprintln("Error reading file: \{Repr(e)}")
           return
         }
       }
@@ -132,7 +134,7 @@ fn main {
         Some(output_path) => {
           @fs.write_string_to_file(output_path, code) catch {
             e => {
-              eprintln("Error writing file: " + e.to_string())
+              eprintln("Error writing file: \{Repr(e)}")
               return
             }
           }
@@ -222,7 +224,7 @@ fn parse_cli_args(args : Array[String]) -> CliArgs {
 ///|
 fn load_config(path : String) -> Result[Config, String] {
   let content = @fs.read_file_to_string(path) catch {
-    e => return Err("Failed to read config: " + e.to_string())
+    e => return Err("Failed to read config: \{Repr(e)}")
   }
   parse_config_json(content)
 }

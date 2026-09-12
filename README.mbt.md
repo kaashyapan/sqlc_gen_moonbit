@@ -36,8 +36,8 @@ version: "2"
 plugins:
   - name: moonbit
     wasm:
-      url: "https://github.com/mizchi/sqlc_gen_moonbit/releases/download/v0.4.0/sqlc-gen-moonbit.wasm"
-      sha256: "8639024dc5ee7271e1b4a8dfec853e85a72814577d66f30810b64270f7fead05"
+      url: "https://github.com/mizchi/sqlc_gen_moonbit/releases/download/v0.5.0/sqlc-gen-moonbit.wasm"
+      sha256: "c20285396a80baf4c950b8b44031e88909b42d271c35ab9d2855169e666dcc3c"
 sql:
   - engine: sqlite
     schema: "schema.sql"
@@ -116,7 +116,7 @@ Add dependencies to `moon.mod.json`:
 {
   "deps": {
     "mizchi/sqlite": "0.1.3",
-    "moonbitlang/x": "0.4.40"
+    "moonbitlang/x": "0.5.5"
   }
 }
 ```
@@ -181,7 +181,7 @@ Add dependencies to `moon.mod.json`:
   "deps": {
     "mizchi/npm_typed": "0.1.2",
     "mizchi/js": "0.10.10",
-    "moonbitlang/x": "0.4.40"
+    "moonbitlang/x": "0.5.5"
   }
 }
 ```

@@ -3,7 +3,7 @@ plugins:
   - name: moonbit
     wasm:
       url: "file://../../_build/wasm/release/build/mizchi/sqlc_gen_moonbit/cmd/wasm/wasm.wasm"
-      sha256: "b99c8c0d4cc3e02fabc8833a194e0019d071e0065d96d67b55d449b2d5dd9af0"
+      sha256: "c20285396a80baf4c950b8b44031e88909b42d271c35ab9d2855169e666dcc3c"
 sql:
   - engine: mysql
     schema: "db/mysql/schema.sql"

@@ -3,6 +3,7 @@ plugins:
   - name: moonbit
     wasm:
       url: "file://../../_build/wasm/release/build/mizchi/sqlc_gen_moonbit/cmd/wasm/wasm.wasm"
+      sha256: "c20285396a80baf4c950b8b44031e88909b42d271c35ab9d2855169e666dcc3c"
 sql:
   - engine: postgresql
     schema: "db/postgres/schema.sql"
@@ -12,5 +13,5 @@ sql:
         out: "db/gen"
         options:
           backend: "postgres"
-          derives: ["Eq", "Debug", "ToJson"]
+          derives: ["Debug"]
           file_prefix: "users" # defaults to sqlc, prevents extremely large output files
